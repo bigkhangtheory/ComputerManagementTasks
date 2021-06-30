@@ -19,11 +19,7 @@
     Datum                        = 'latest'
     # Module to manage Hierachical Configuration Data
 
-<<<<<<< HEAD
-    'Datum.InvokeCommand'        = '0.1.2'
-=======
-    'Datum.InvokeCommand'       = 'latest'
->>>>>>> a5b81cee48834c28e101b7e38cea0c966683d218
+    'Datum.InvokeCommand'        = 'latest'
     # Datum Handler module to encrypt and decrypt secrets in Datum using Dave Wyatt's ProtectedData module
 
     'Datum.ProtectedData'        = 'latest'
