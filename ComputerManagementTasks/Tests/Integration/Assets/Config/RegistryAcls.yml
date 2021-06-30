@@ -1,0 +1,21 @@
+Paths:
+  - Path: HKLM:\SOFTWARE\Microsoft\Windows\Policies\MyKey
+    AccessControlList:
+      - Principal: 'MAPCOM\Domain Users'
+        ForcePrincipal: false 
+        AccessControlEntry:
+          - AccessControlType: Allow
+            Rights: FullControl
+            Inheritance: This Key and Subkeys
+            Ensure: Present
+    Force: False
+  - Path: HKLM:\SYSTEM\Microsoft\CurrentControlSet\MyOtherKey
+    AccessControlList:
+      - Principal: 'MAPCOM\Domain Users'
+        ForcePrincipal: true 
+        AccessControlEntry:
+          - AccessControlType: Allow
+            Rights: ReadPermissions
+            Inheritance: This Key Only
+            Ensure: Present
+    Force: true

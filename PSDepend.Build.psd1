@@ -19,7 +19,7 @@
     Datum                        = '0.39.0'
     # Module to manage Hierachical Configuration Data
 
-    'Datum.InvokeCommand'       = '0.1.2'
+    'Datum.InvokeCommand'        = '0.1.2'
     # Datum Handler module to encrypt and decrypt secrets in Datum using Dave Wyatt's ProtectedData module
 
     'Datum.ProtectedData'        = 'latest'
@@ -55,6 +55,7 @@
     # -------------------------------------------------------------------------
     # DSC Resources
     # -------------------------------------------------------------------------
+    AccessControlDsc             = '1.4.1'
     Chocolatey                   = '0.0.79'
     ComputerManagementDsc        = '8.4.0'
     GPRegistryPolicyDsc          = '1.2.0'
