@@ -9,37 +9,58 @@ configuration NtfsAcls
     Import-DscResource -ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName AccessControlDsc 
 
-    foreach ($path in $Paths)
+    foreach ($p in $Paths)
     {
-        $executionName = $path.Path.Split('\')
-        $executionName = $executionName[$executionName.Count - 1]
+        # remove case sensitivity of ordered Dictionary or Hashtables
+        $p = @{ } + $p
 
+        # formulate execution name from Path
+        $executionName = "$($p.Path -replace '[-().:\s]', '_')"
+
+        # ensure the the path type is either 'Directory' or 'File'
+        if (-not (($p.Type -eq 'Directory') -or ($p.Type -eq 'File')))
+        {
+            throw "Error: The Path must be specified as either a 'Directory' of 'File'."
+        }
+
+        # ensure that the specified path exists
+        File "$executionName"
+        {
+            DestinationPath = $p.Path
+            Type            = $p.Type
+            Ensure          = 'Present'
+        }
+        $dependsOnFile = "[File]$executionName"
+
+        # create NTFS access control resource
         NtfsAccessEntry "ntfs_$executionName"
         {
-            Path              = $path.Path
+            Path              = $p.Path
+            Force             = $p.Force
+            DependsOn         = $dependsOnFile
             AccessControlList = @(
-                foreach ($acl in $path.AccessControlList)
+                foreach ($a in $p.AccessControlList)
                 {
                     NTFSAccessControlList 
                     {
-                        Principal          = $acl.Principal 
+                        Principal          = $a.Principal
+                        ForcePrincipal     = $a.ForcePrincipal 
                         AccessControlEntry = @(
-                            foreach ($entry in $acl.AccessControlEntry)
+                            foreach ($e in $a.AccessControlEntry)
                             {
                                 NTFSAccessControlEntry
                                 {
-                                    AccessControlType = $entry.AccessControlType 
-                                    FileSystemRights  = $entry.FileSystemRights 
-                                    Inheritance       = $entry.Inheritance
-                                    Ensure            = $entry.Ensure  
+                                    AccessControlType = $e.AccessControlType 
+                                    FileSystemRights  = $e.FileSystemRights 
+                                    Inheritance       = $e.Inheritance
+                                    Ensure            = $e.Ensure  
                                 }
                             }
                         )
-                        ForcePrincipal     = $acl.ForcePrincipal 
                     }
                 }
             )
-            Force             = $path.Force 
+
         }
     }
 }

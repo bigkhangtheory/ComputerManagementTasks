@@ -1,5 +1,6 @@
 Paths:
   - Path: C:\Windows\System32\spool\drivers
+    Type: Directory
     AccessControlList:
       - Principal: 'SYSTEM'
         AccessControlEntry:
