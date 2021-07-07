@@ -1,5 +1,20 @@
 Paths:
-  - Path: C:\Windows\System32\spool\drivers
+  - Path: 'C:\Windows\System32\spool\drivers'
+    Type: Directory
+    AccessControlList:
+      - Principal: 'SYSTEM'
+        AccessControlEntry:
+          - AccessControlType: Deny
+            FileSystemRights: Modify
+            Inheritance: This folder and files 
+            Ensure: Present
+          - AccessControlType: Allow
+            FileSystemRights: FullControl
+            Inheritance: This folder and files
+            Ensure: Absent
+        ForcePrincipal: true
+    Force: false
+  - Path: 'C:\Windows'
     Type: Directory
     AccessControlList:
       - Principal: 'SYSTEM'
