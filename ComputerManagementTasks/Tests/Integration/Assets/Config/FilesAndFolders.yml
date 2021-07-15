@@ -1,16 +1,16 @@
 Items:
-  - DestinationPath: C:\Test.txt
+  - DestinationPath: C:\Program Files (x86)\Amtelco\Unified Reports
     Contents: Test Content
     Ensure: Present
     Force: true
     Type: File
-  - DestinationPath: C:\Test
+  - DestinationPath: C:\ProgramData\chocolatey
     Ensure: Present
     Force: true
     Recurse: true
     SourcePath: C:\Source
     Type: Directory
-  - DestinationPath: C:\TestShare
+  - DestinationPath: C:\Support
     Ensure: Present
     Force: true
     Type: Directory
