@@ -54,13 +54,42 @@
 
     # -------------------------------------------------------------------------
     # DSC Resources
-    # -------------------------------------------------------------------------
+    # ------------------------------------------------------------------------
+    
     AccessControlDsc             = '1.4.1'
+    # Module with DSC resource to manage Registry and NTFS access entries and manage Active Directory SACL
+
+    CertificateDsc               = '5.1.0'
+    # DSC resources for managing certificates on a Windows Server.
+
+    cChoco                       = '2.5.0.0'
+    # Chocolatey DSC Resources for use with internal packages and the community package repository.
+    
     Chocolatey                   = '0.0.79'
+
     ComputerManagementDsc        = '8.4.0'
+    # DSC resources for configuration of a Windows computer.
+
+    DSCR_MSLicense               = '0.9.1'
+    # PowerShell DSC Resource to set Windows / Office product key.
+
     GPRegistryPolicyDsc          = '1.2.0'
+    # This resource module contains DSC resources used to apply and manage local group policies by modifying the respective .pol file.
+    
     NetworkingDsc                = '8.2.0'
+
+    PSModulesDsc                 = '1.0.13.0'
+    # DSC module to manage Powershell modules and repositories.
+    
+    SChannelDsc                  = '1.2.2'
+    # The SChannelDsc PowerShell module provides DSC resources that can be used to manage SChannel settings.
+
+    
     StorageDsc                   = '5.0.1'
+
+    WSManDsc                     = '3.1.1'
+    # DSC resources for configuring WS-Man.
+
     xBitlocker                   = '1.4.0.0'
     XmlContentDsc                = '0.0.1'
     xPSDesiredStateConfiguration = '9.1.0'

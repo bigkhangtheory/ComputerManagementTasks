@@ -1,3 +1,5 @@
-TimeZone: Fiji Standard Time
 Name: TestServer
 Description: This is a test server
+DomainName: mapcom.local
+JoinOU: 'OU=MAPCOMServers,DC=mapcom,DC=local'
+TimeZone: Eastern Standard Time
