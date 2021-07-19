@@ -1,0 +1,13 @@
+Modules:
+  - Name: PowerShellGet
+    RequiredVersion: 3.0.0-beta10
+    Repository: MapPSGallery
+    Ensure: Present
+  - Name: RDWebClientManagement
+    Repository: MapPSGallery
+    Ensure: Present
+#Repositories:
+#  - Name: MapPSGallery
+#    InstallationPolicy: Trusted
+#    SourceLocation: 'https://repo.windows.mapcom.local/nuget/powershell/'
+#    Ensure: Present
