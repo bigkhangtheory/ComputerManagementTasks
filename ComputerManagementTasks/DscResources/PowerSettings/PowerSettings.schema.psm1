@@ -15,7 +15,7 @@ configuration PowerSettings
     Import-DscResource -ModuleName ComputerManagementDsc
 
     # create execution name for DSC resource
-    $executionName = "$($PowerPlan)"
+    $executionName = "$($PowerPlan -replace '[-().:\s]', '_')"
 
     # create DSC resource for Power Plan activation
     PowerPlan "$executionNamne"

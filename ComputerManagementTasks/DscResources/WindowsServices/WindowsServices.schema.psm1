@@ -10,19 +10,19 @@ configuration WindowsServices {
     foreach ($service in $Services)
     {
         # Remove Case Sensitivity of ordered Dictionary or Hashtables
-        $service = @{}+$service
+        $service = @{} + $service
 
         $service.Ensure = 'Present'
 
         # set defaults if no state is specified
-        if( [string]::IsNullOrWhiteSpace($service.State) )
+        if ( [string]::IsNullOrWhiteSpace($service.State) )
         {
             # check for running service only if none or a compatible startup type is specified
-            if( [string]::IsNullOrWhiteSpace($service.StartupType) -or ($service.StartupType -eq 'Automatic') )
+            if ( [string]::IsNullOrWhiteSpace($service.StartupType) -or ($service.StartupType -eq 'Automatic') )
             {
                 $service.State = 'Running'
             }
-            elseif( $service.StartupType -eq 'Disabled' )
+            elseif ( $service.StartupType -eq 'Disabled' )
             {
                 $service.State = 'Stopped'
             }
