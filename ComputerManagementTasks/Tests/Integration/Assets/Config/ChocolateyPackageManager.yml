@@ -1,0 +1,43 @@
+InstallDir: C:\ProgramData\chocolatey
+Configs:
+  - ConfigName: cacheLocation
+    Value: C:\ProgramData\chocolatey\cache
+    Ensure: Present
+
+  - ConfigName: webRequestTimeoutSeconds
+    Value: 60
+    Ensure: Present
+  
+Features:
+  - FeatureName: checksumFiles
+    Ensure: Present
+  - FeatureName: autoUninstaller
+    Ensure: Present
+  - FeatureName: allowEmptyChecksums
+    Ensure: Absent
+  - FeatureName: useEnhancedExitCode
+  
+Sources:
+  - Name: internal
+    Source: 'https://repo.windows.mapcom.local/nuget/chocolatey/'
+    Priority: 1
+    Ensure: Present
+
+  - Name: chocolatey
+    Source: 'https://chocolatey.org/api/v2/'
+    Priority: 0
+    Ensure: Present
+
+Packages:
+  - Name: carbonblack
+    Ensure: Present
+  
+  - Name: redcloak
+    Ensure: Absent
+  
+  - Name: chocolatey-core.extension
+    MinimumVersion: 1.1.0
+  
+  - Name: powershell-core
+    Params: /CleanUpPath
+    AutoUpgrade: true
