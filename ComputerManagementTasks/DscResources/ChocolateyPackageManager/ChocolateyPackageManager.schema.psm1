@@ -1,196 +1,332 @@
 <#
     .DESCRIPTION
-        Chocolatey DSC Resources for use with internal packages and the community package repository.
-    .LINK
-        http://chocolatey.org/
+        Manage Chocolate packages
 #>
-#Requires -Modules cChoco
+#Requires -Modules PSDesiredStateConfiguration, ComputerManagementDsc, Chocolatey
 
-configuration ChocolateyPackageManager
-{
+configuration ChocolateyPackageManager {
     param (
         [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $InstallDir = 'C:\ProgramData\chocolatey\',
+        [hashtable]$Software,
 
         [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $InstallScriptUrl = 'https://chocolatey.org/install.ps1',
+        [hashtable[]]$Sources,
 
         [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [System.Collections.Hashtable[]]
-        $Configs,
+        [hashtable[]]$Packages,
 
         [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [System.Collections.Hashtable[]]
-        $Features,
-
-        [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [System.Collections.Hashtable[]]
-        $Sources,
-
-        [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [System.Collections.Hashtable[]]
-        $Packages
+        [hashtable[]]$Features
     )
 
-    Import-DscResource -Module PSDesiredStateConfiguration
-    Import-DscResource -ModuleName cChoco
+    Import-DscResource -ModuleName PSDesiredStateConfiguration
+    Import-DscResource -ModuleName ComputerManagementDsc
+    Import-DscResource -ModuleName Chocolatey
 
+    $chocoSwExecName = 'Choco_Software'
 
-    # ensure Chocolatey installation directory exists
-    File ChocoInstallDir
+    if ( $Software -ne $null )
     {
-        DestinationPath = $InstallDir
-        Type            = 'Directory'
-        Ensure          = 'Present'
-    }
 
-    # create Chocolatey installation
-    cChocoInstaller InstallChocolatey
-    {
-        InstallDir            = $InstallDir
-        ChocoInstallScriptUrl = $InstallScriptUrl
-        DependsOn             = '[File]ChocoInstallDir'
-    }
-
-    
-    # create Chocolatey configurations
-    if ($Configs)
-    {
-        foreach ($c in $Configs)
+        if ( [String]::IsNullOrWhiteSpace($Software.OfflineInstallZip) -eq $false )
         {
-            # remove case sensitivity for ordered Dictionary or Hashtables
-            $c = @{ } + $c
-
-            # create execution name for DSC resource
-            $executionName = "$($c.ConfigName)"
-
-            # if not specified, ensure 'Present'
-            if ($null -eq $c.Ensure)
+            # reduce footprint of serialized script parameter objects
+            $swInstallationDirectory = $Software.InstallationDirectory
+            $swOfflineInstallZip = $Software.OfflineInstallZip
+            
+            Script OfflineInstallChocolatey
             {
-                $c.Ensure = 'Present'
+                TestScript = {
+                    # origin: https://github.com/chocolatey-community/Chocolatey/blob/master/Chocolatey/public/Test-ChocolateyInstall.ps1
+
+                    try
+                    {
+                        Write-Verbose 'Loading machine Path Environment variable into session.'
+                        $envPath = [Environment]::GetEnvironmentVariable('Path', 'Machine')
+                        [Environment]::SetEnvironmentVariable($envPath, 'Process')
+
+                        $installDir = $using:swInstallationDirectory
+
+                        if ($installDir -and (Test-Path $installDir) )
+                        {
+                            $installDir = (Resolve-Path $installDir -ErrorAction Stop).Path
+                        }
+
+                        if ($chocoCmd = Get-Command choco.exe -CommandType Application -ErrorAction SilentlyContinue)
+                        {
+                            if (
+                                !$installDir -or
+                                $chocoCmd.Path -match [regex]::Escape($installDir)
+                            )
+                            {
+                                Write-Verbose ('Chocolatey Software found in {0}' -f $chocoCmd.Path)
+                                return $true
+                            }
+                            else
+                            {
+                                Write-Verbose (
+                                    'Chocolatey Software not installed in {0}`n but in {1}' -f $installDir, $chocoCmd.Path
+                                )
+                                return $false
+                            }
+                        }
+                        else
+                        {
+                            Write-Verbose 'Chocolatey Software not found.'
+                            return $false
+                        }
+                    }
+                    catch
+                    {
+                        Write-Verbose "Test for Chocolatey Software aborted with an exception.`n$_"
+                        return $false
+                    }
+                }
+
+                SetScript  = {
+                    # origin: https://github.com/chocolatey-community/Chocolatey/blob/master/Chocolatey/public/Install-ChocolateySoftware.ps1
+
+                    if ($null -eq $env:TEMP)
+                    {
+                        $env:TEMP = Join-Path $Env:SYSTEMDRIVE 'temp'
+                    }
+
+                    $tempDir = [io.path]::Combine($Env:TEMP, 'chocolatey', 'chocInstall')
+                    if (![System.IO.Directory]::Exists($tempDir))
+                    {
+                        $null = New-Item -Path $tempDir -ItemType Directory
+                    }
+
+                    if ( -not (Test-Path $using:swOfflineInstallZip) )
+                    {
+                        throw "Offline installation package '$($using:swOfflineInstallZip)' not found."
+                    }
+
+                    # copy the package with zip extension
+                    $file = Resolve-Path $using:swOfflineInstallZip
+                    $zipFile = [io.path]::Combine($Env:TEMP, 'chocolatey', 'chocolatey.zip')
+
+                    Write-Verbose "Copy install package '$file' to '$zipFile'..."
+
+                    Copy-Item -Path $file -Destination $zipFile -Force
+
+                    # unzip the package
+                    Write-Verbose "Extracting $zipFile to $tempDir..."
+
+                    if ($PSVersionTable.PSVersion.Major -ge 5)
+                    {
+                        Expand-Archive -Path "$zipFile" -DestinationPath "$tempDir" -Force
+                    }
+                    else
+                    {
+                        try
+                        {
+                            $shellApplication = New-Object -com shell.application
+                            $zipPackage = $shellApplication.NameSpace($zipFile)
+                            $destinationFolder = $shellApplication.NameSpace($tempDir)
+                            $destinationFolder.CopyHere($zipPackage.Items(), 0x10)
+                        }
+                        catch
+                        {
+                            throw "Unable to unzip package using built-in compression. Error: `n $_"
+                        }
+                    }
+
+                    # Call chocolatey install
+                    Write-Verbose 'Installing chocolatey on this machine.'
+                    $TempTools = [io.path]::combine($tempDir, 'tools')
+                    #   To be able to mock
+                    $chocInstallPS1 = Join-Path $TempTools 'chocolateyInstall.ps1'
+
+                    $chocoInstallDir = $using:swInstallationDirectory
+
+                    if ($chocoInstallDir -ne $null -and $chocoInstallDir -ne '')
+                    {
+                        Write-Verbose "Set Chocolatey installation directory to '$chocoInstallDir'"
+
+                        [Environment]::SetEnvironmentVariable('ChocolateyInstall', $chocoInstallDir, 'Machine')
+                        [Environment]::SetEnvironmentVariable('ChocolateyInstall', $chocoInstallDir, 'Process')
+                    }
+
+                    Write-Verbose "EnvVar 'ChocolateyInstall': $([Environment]::GetEnvironmentVariable('ChocolateyInstall'))"
+
+                    & $chocInstallPS1 | Write-Verbose
+
+                    Write-Verbose 'Ensuring chocolatey commands are on the path.'
+                    $chocoPath = [Environment]::GetEnvironmentVariable('ChocolateyInstall')
+                    if ($chocoPath -eq $null -or $chocoPath -eq '')
+                    {
+                        $chocoPath = "$env:ALLUSERSPROFILE\Chocolatey"
+                    }
+
+                    if (!(Test-Path ($chocoPath)))
+                    {
+                        $chocoPath = "$env:SYSTEMDRIVE\ProgramData\Chocolatey"
+                    }
+
+                    $chocoExePath = Join-Path $chocoPath 'bin'
+
+                    if ($($env:Path).ToLower().Contains($($chocoExePath).ToLower()) -eq $false)
+                    {
+                        $env:Path = [Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::Machine)
+                    }
+
+                    Write-Verbose 'Ensuring chocolatey.nupkg is in the lib folder'
+                    $chocoPkgDir = Join-Path $chocoPath 'lib\chocolatey'
+                    $nupkg = Join-Path $chocoPkgDir 'chocolatey.nupkg'
+                    $null = [System.IO.Directory]::CreateDirectory($chocoPkgDir)
+                    Copy-Item "$file" "$nupkg" -Force -ErrorAction SilentlyContinue
+
+                    if ($ChocoVersion = & "$chocoPath\choco.exe" -v)
+                    {
+                        Write-Verbose "Installed Chocolatey Version: $ChocoVersion"
+                    }
+
+                    # reboot machine to activate the new environment variables for DSC
+                    $global:DSCMachineStatus = 1
+                }
+
+                GetScript  = { return @{result = 'N/A' } }
             }
 
-            # this resource depends on a chocolatey installation
-            $c.DependsOn = '[cChocoInstaller]InstallChocolatey'
-            
-            # create DSC resource for Chocolatey config
-            $Splatting = @{
-                ResourceName  = 'cChocoConfig'
-                ExecutionName = $executionName
-                Properties    = $c
-                NoInvoke      = $true
-            }
-            (Get-DscSplattedResource @Splatting).Invoke($c)
+            $Software.Remove('OfflineInstallZip')
+            $Software.DependsOn = '[Script]OfflineInstallChocolatey'
         }
+
+        (Get-DscSplattedResource -ResourceName ChocolateySoftware -ExecutionName $chocoSwExecName -Properties $Software -NoInvoke).Invoke($Software)
     }
 
 
-    # create Chocolatey features
-    if ($Features)
+    # create DSC resource for Chocolatey features
+    if ( $null -ne $Features )
     {
-        foreach ($f in $features)
+        foreach ($f in $Features)
         {
-            # remove case sensitivity for ordered Dictionary or Hashtables
-            $f = @{ } + $f
+            # Remove Case Sensitivity of ordered Dictionary or Hashtables
+            $f = @{} + $f
 
-            # create execution name for DSC resource
-            $executionName = "$($f.FeatureName)"
-            
-            # if not specified, ensure 'Present'
-            if ($null -eq $f.Ensure)
+            $executionName = $f.Name -replace '\(|\)|\.| ', ''
+            $executionName = "ChocolateyFeature_$executionName"
+            if (-not $f.ContainsKey('Ensure'))
             {
                 $f.Ensure = 'Present'
             }
-            
-            # this resource depends on a chocolatey installation
-            $f.DependsOn = '[cChocoInstaller]InstallChocolatey'
-
-            # create DSC resource for Chocolatey feature
-            $Splatting = @{
-                ResourceName  = 'cChocoFeature'
-                ExecutionName = $executionName
-                Properties    = $f
-                NoInvoke      = $true
-            }
-            (Get-DscSplattedResource @Splatting).Invoke($f)
+            (Get-DscSplattedResource -ResourceName ChocolateyFeature -ExecutionName $executionName -Properties $f -NoInvoke).Invoke($f)
         }
     }
 
 
-    # create Chocolatey sources
-    if ($Sources)
+    # create DSC resource for Chocolatey sources
+    if ( $null -ne $Sources )
     {
-        # create collection for Chocolatey sources dependency name
-        $dependsOnChocoSources = New-Object -TypeName System.Collections.ArrayList
-
         foreach ($s in $Sources)
         {
-            # remove case sensitivity for ordered Dictionary or Hashtables
-            $s = @{ } + $s
+            # Remove Case Sensitivity of ordered Dictionary or Hashtables
+            $s = @{} + $s
 
-            # create execution name for DSC resource
-            $executionName = "$($s.Name)"
-                        
-            # if not specified, ensure 'Present'
-            if ($null -eq $s.Ensure)
+            $executionName = $s.Name -replace '\(|\)|\.| ', ''
+            $executionName = "Choco_Source_$executionName"
+
+            if (-not $s.ContainsKey('Ensure'))
             {
                 $s.Ensure = 'Present'
             }
-                        
-            # this resource depends on a chocolatey installation
-            $s.DependsOn = '[cChocoInstaller]InstallChocolatey'
-            
-            # create DSC resource for Chocolatey source
-            $Splatting = @{
-                ResourceName  = 'cChocoSource'
-                ExecutionName = $executionName
-                Properties    = $s
-                NoInvoke      = $true
-            }
-            (Get-DscSplattedResource @Splatting).Invoke($s)
 
-            # stack Chocolatey source dependencies
-            $dependsOnChocoSources.Add("[cChocoSource]$executionName")
+            if ( $Software -ne $null )
+            {
+                $s.DependsOn = "[ChocolateySoftware]$chocoSwExecName"
+            }
+
+            (Get-DscSplattedResource -ResourceName ChocolateySource -ExecutionName $executionName -Properties $s -NoInvoke).Invoke($s)
         }
     }
 
 
-    # create Chocolatey packages
-    if ($Packages)
+    # create DSC resource for Chocolatey packages
+    if ( $null -ne $Packages )
     {
+        $clonedPackageList = [System.Collections.ArrayList]@()
+
+        [uint16]$i = 0
+
+        # set Rank attribute to allow a later ordering
         foreach ($p in $Packages)
         {
-            # remove case sensitivity for ordered Dictionary or Hashtables
-            $p = @{ } + $p
+            # Remove Case Sensitivity of ordered Dictionary or Hashtables
+            $p = @{} + $p
+            # counter to keep original list order on equal rank values
+            $i++
 
-            # create execution name for DSC resource
-            $executionName = "$($p.Name -replace '[-().:\s]', '_')"
-                        
-            # if not specified, ensure 'Present'
-            if ($null -eq $p.Ensure)
+            if ( [string]::IsNullOrWhiteSpace($p.Rank) )
+            {
+                # set default Rank to 1000
+                $p.Rank = [UInt64](1000 * 100000 + $i)
+            }
+            else
+            {
+                $p.Rank = [UInt64]($p.Rank * 100000 + $i)
+            }
+
+            $clonedPackageList.Add( $p ) 
+        }
+
+        foreach ($p in ($clonedPackageList | Sort-Object { [UInt64]($_.Rank) }) )
+        {
+            $p.Remove( 'Rank' )
+
+            $executionName = $p.Name -replace '\(|\)|\.| ', ''
+            $executionName = "Chocolatey_$executionName"
+            $p.ChocolateyOptions = [hashtable]$p.ChocolateyOptions
+
+            if (-not $p.ContainsKey('Ensure'))
             {
                 $p.Ensure = 'Present'
             }
-            
-            # this resource depends on a chocolatey installation
-            $p.DependsOn = $dependsOnChocoSources
-            
-            # create DSC resource for Chocolatey source
-            $Splatting = @{
-                ResourceName  = 'cChocoPackageInstaller'
-                ExecutionName = $executionName
-                Properties    = $p
-                NoInvoke      = $true
+
+            if ( $Software -ne $null )
+            {
+                $p.DependsOn = "[ChocolateySoftware]$chocoSwExecName"
             }
-            (Get-DscSplattedResource @Splatting).Invoke($p)
-        }    
+
+            [boolean]$forceReboot = $false
+            if ($p.ContainsKey('ForceReboot'))
+            {
+                $forceReboot = $p.ForceReboot
+                $p.Remove( 'ForceReboot' )
+            }
+
+            (Get-DscSplattedResource -ResourceName ChocolateyPackage -ExecutionName $executionName -Properties $p -NoInvoke).Invoke($p)
+
+            if ($forceReboot -eq $true)
+            {
+                $rebootKeyName = 'HKLM:\SOFTWARE\DSC Community\CommonTasks\RebootRequests'
+                $rebootVarName = "RebootAfter_$executionName"
+
+                Script $rebootVarName
+                {
+                    TestScript = {
+                        $val = Get-ItemProperty -Path $using:rebootKeyName -Name $using:rebootVarName -ErrorAction SilentlyContinue
+
+                        if ($val -ne $null -and $val.$rebootVarName -gt 0)
+                        {
+                            return $true
+                        }
+                        return $false
+                    }
+                    SetScript  = {
+                        if ( -not (Test-Path -Path $using:rebootKeyName) )
+                        {
+                            New-Item -Path $using:rebootKeyName -Force
+                        }
+                        Set-ItemProperty -Path $rebootKeyName -Name $using:rebootVarName -Value 1
+                        $global:DSCMachineStatus = 1
+                    }
+                    GetScript  = { return @{result = 'result' } }
+                    DependsOn  = "[ChocolateyPackage]$executionName"
+                }
+            }
+        }
     }
+
+
 }
