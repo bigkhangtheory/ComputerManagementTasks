@@ -1,6 +1,13 @@
+<#
+    .DESCRIPTION
+#>
+#Requires -Module xPSDesiredStateConfiguration
+
 configuration LocalGroups {
     param (
-        [hashtable[]]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.Collections.Hashtable[]]
         $Groups
     )
     
@@ -8,7 +15,13 @@ configuration LocalGroups {
 
     foreach ($group in $Groups)
     {
-        $executionName = $group.GroupName
+        # remove case sensivity of ordered Dictionary or Hashtables
+        $group = @{} + $group
+
+        # create execution name for resource
+        $executionName = "$($group.GroupName -replace '[-().:\s]', '_')"
+
+        # create resource for local groups
         (Get-DscSplattedResource -ResourceName xGroup -ExecutionName $executionName -Properties $group -NoInvoke).Invoke($group)
     }
 }
