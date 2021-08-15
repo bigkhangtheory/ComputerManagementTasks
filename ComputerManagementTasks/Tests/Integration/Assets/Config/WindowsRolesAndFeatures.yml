@@ -1,0 +1,16 @@
+Roles:
+  - Name: FileAndStorage-Services
+    Ensure: Present
+  - Name: FS-SyncShareService
+    Ensure: Absent
+  - Name: Storage-Services
+Features:
+  - Name: FS-SMB1
+    Ensure: Absent
+  - Name: FS-SMB1-CLIENT
+    Ensure: Absent
+  - Name: FS-SMB1-SERVER
+    Ensure: Absent
+  - Name: PowerShell
+  - Name: WoW64-Support
+    Ensure: Present

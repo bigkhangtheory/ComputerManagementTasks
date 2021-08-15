@@ -45,14 +45,32 @@ configuration ComputerSettings
             'Atlantic Standard Time', 'Newfoundland Standard Time', 'UTC'
         )]
         [System.String]
-        $TimeZone
+        $TimeZone,
 
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $PowerPlan,
 
+        [Parameter()]
+        [ValidateScript(
+            {
+                if (($_ -match [System.Globalization.CultureInfo]::GetCultures([System.Globalization.CultureTypes]::AllCultures).Name))
+                {
+                    throw "ERROR: Locale $_ is not a valid Windows System locale."
+                }
+                else
+                {
+                    return $true
+                }
+            }
+        )]
+        [System.String]
+        $SystemLocale
     )
     
     Import-DscResource -ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName ComputerManagementDsc
-    Import-DscResource -ModuleName DSCR_MSLicense
 
     # Parameters for DSC resource 'TimeZone'
     $timeZoneParamList = @(
@@ -77,7 +95,9 @@ configuration ComputerSettings
     )
 
     
-    # create DSC resource for Computer
+    <#
+        Create DSC resource for Computer
+    #>
     $params = @{ }
     foreach ($item in ($PSBoundParameters.GetEnumerator() | Where-Object Key -In $computerParamList))
     {
@@ -86,7 +106,9 @@ configuration ComputerSettings
     (Get-DscSplattedResource -ResourceName Computer -ExecutionName "Computer$($params.Name)" -Properties $params -NoInvoke).Invoke($params)
     
     
-    # create DSC resource for TimeZone
+    <#
+        Create DSC resource for TimeZone
+    #>
     $params = @{ }
     foreach ($item in ($PSBoundParameters.GetEnumerator() | Where-Object Key -In $timeZoneParamList))
     {
@@ -97,4 +119,36 @@ configuration ComputerSettings
 
 
 
+    <#
+        Create DSC resource for Power Plan 
+    #>
+    if ($PowerPlan)
+    {
+        # create execution name for DSC resource
+        $executionName = "$($PowerPlan -replace '[-().:\s]', '_')"
+
+        # create DSC resource for Power Plan activation
+        PowerPlan "$executionName"
+        {
+            IsSingleInstance = 'Yes'
+            Name             = $PowerPlan
+        }
+    }
+
+
+    <#
+        Create DSC resource for System locale
+    #>
+    if ($SystemLocale)
+    {
+        # create execution name for DSC resource
+        $executionName = "$($SystemLocale -replace '[-().:\s]', '_')"
+
+        # create resource
+        SystemLocale "$executionName"
+        {
+            IsSingleInstance = 'Yes'
+            SystemLocale     = $SystemLocale
+        }
+    }
 }

@@ -3,3 +3,11 @@ Description: This is a test server
 DomainName: mapcom.local
 JoinOU: 'OU=MAPCOMServers,DC=mapcom,DC=local'
 TimeZone: Eastern Standard Time
+# PowerPlan
+#
+# The resource allows specifying a power plan to activate.
+PowerPlan: High performance
+# SystemLocale
+#
+# Ths resource is used set the system locale on a Windows machine.
+SystemLocale: en-US
