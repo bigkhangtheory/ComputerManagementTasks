@@ -57,14 +57,14 @@ configuration NetworkIpConfiguration
                 throw "ERROR: Enabled DHCP requires empty 'IpAddress' ($IpAddress), 'Gateway' ($Gateway) and 'DnsServer' ($DnsServer) parameters for interface '$InterfaceAlias'."
             }
 
-            Get-NetIPInterface "EnableDhcp_$InterfaceAlias"
+            Get-NetIPInterface "EnableDhcp_$($InterfaceAlias -replace '[-().:\s]', '_')"
             {
                 InterfaceAlias = $InterfaceAlias
                 AddressFamily  = 'IPv4'
                 Dhcp           = 'Enabled'
             }
 
-            DnsServerAddress "EnableDhcpDNS_$InterfaceAlias"
+            DnsServerAddress "EnableDhcpDNS_$($InterfaceAlias -replace '[-().:\s]', '_')"
             {
                 InterfaceAlias = $InterfaceAlias
                 AddressFamily  = 'IPv4'
@@ -75,7 +75,7 @@ configuration NetworkIpConfiguration
             if ( -not [string]::IsNullOrWhiteSpace($IpAddress) )
             {
                 # disable DHCP if IP-Address is specified
-                Get-NetIPInterface "DisableDhcp_$InterfaceAlias"
+                Get-NetIPInterface "DisableDhcp_$($InterfaceAlias -replace '[-().:\s]', '_')"
                 {
                     InterfaceAlias = $InterfaceAlias
                     AddressFamily  = 'IPv4'
@@ -89,7 +89,7 @@ configuration NetworkIpConfiguration
 
                 $ip = "$($IpAddress)/$($Prefix)"
 
-                IPAddress "NetworkIp_$InterfaceAlias" 
+                IPAddress "NetworkIp_$($InterfaceAlias -replace '[-().:\s]', '_')" 
                 {
                     IPAddress      = $ip
                     AddressFamily  = 'IPv4'
@@ -99,7 +99,7 @@ configuration NetworkIpConfiguration
 
             if ( -not [string]::IsNullOrWhiteSpace($Gateway) )
             {
-                DefaultGatewayAddress "DefaultGateway_$InterfaceAlias"
+                DefaultGatewayAddress "DefaultGateway_$($InterfaceAlias -replace '[-().:\s]', '_')"
                 {
                     AddressFamily  = 'IPv4'
                     InterfaceAlias = $InterfaceAlias
@@ -109,7 +109,7 @@ configuration NetworkIpConfiguration
 
             if ( $null -ne $DnsServer -and $DnsServer.Count -gt 0 )
             {
-                DnsServerAddress "DnsServers_$InterfaceAlias"
+                DnsServerAddress "DnsServers_$($InterfaceAlias -replace '[-().:\s]', '_')"
                 {
                     InterfaceAlias = $InterfaceAlias
                     AddressFamily  = 'IPv4'
@@ -120,7 +120,7 @@ configuration NetworkIpConfiguration
 
         if ( $null -ne $InterfaceMetric -and $InterfaceMetric -gt 0 )
         {
-            Script "InterfaceMetric_$InterfaceAlias"
+            Script "InterfaceMetric_$($InterfaceAlias -replace '[-().:\s]', '_')"
             {
                 TestScript = 
                 {
@@ -149,7 +149,7 @@ configuration NetworkIpConfiguration
             }
         }
 
-        WinsSetting "LmhostsLookup_$InterfaceAlias"
+        WinsSetting "LmhostsLookup_$($InterfaceAlias -replace '[-().:\s]', '_')"
         {
             EnableLmHosts    = $EnableLmhostsLookup
             IsSingleInstance = 'Yes'
@@ -157,7 +157,7 @@ configuration NetworkIpConfiguration
 
         if ($DisableNetbios)
         {
-            NetBios "DisableNetBios_$InterfaceAlias"
+            NetBios "DisableNetBios_$($InterfaceAlias -replace '[-().:\s]', '_')"
             {
                 InterfaceAlias = $InterfaceAlias
                 Setting        = 'Disable'
@@ -166,7 +166,7 @@ configuration NetworkIpConfiguration
 
         if ($DisableIPv6)
         {
-            Get-NetAdapterBinding "DisableIPv6_$InterfaceAlias"
+            Get-NetAdapterBinding "DisableIPv6_$($InterfaceAlias -replace '[-().:\s]', '_')"
             {
                 InterfaceAlias = $InterfaceAlias
                 ComponentId    = 'ms_tcpip6'
@@ -181,7 +181,7 @@ configuration NetworkIpConfiguration
                 throw "ERROR: Invalid value of attribute 'NetworkCategory'."
             }
 
-            Script "NetworkCategory_$InterfaceAlias"
+            Script "NetworkCategory_$($InterfaceAlias -replace '[-().:\s]', '_')"
             {
                 TestScript = {
                     $val = Get-NetConnectionProfile -InterfaceAlias $using:InterfaceAlias
