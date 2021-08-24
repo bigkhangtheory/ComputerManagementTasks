@@ -40,7 +40,7 @@ configuration FilesAndFolders
             $item.Remove('Permissions')
         }
 
-        $executionName = "file_$($item.DestinationPath -replace '(:|\\|/|\s)', '_')"
+        $executionName = "file_$($item.DestinationPath -replace '[-().(:|\\|/|\s)]', '_')"
         (Get-DscSplattedResource -ResourceName File -ExecutionName $executionName -Properties $item -NoInvoke).Invoke($item)
 
         if ( $null -ne $Permissions )

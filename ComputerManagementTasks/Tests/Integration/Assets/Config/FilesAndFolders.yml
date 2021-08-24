@@ -22,3 +22,23 @@ Items:
           - Read
           - Write
           - ExecuteFile
+  - DestinationPath: C:\Support\Archiver_Batch
+    Force: true
+    Recurse: true
+    SourcePath: '\\mapcom.local\DscService\Resources\Scripts\HUBA4\Support\Archiver_Batch'
+    Type: Directory
+    Ensure: Present
+
+  - DestinationPath: C:\Support\Ultracomm_Batch
+    Force: true
+    Recurse: true
+    SourcePath: '\\mapcom.local\DscService\Resources\Scripts\HUBA4\Support\Ultracomm_Batch'
+    Type: Directory
+    Ensure: Present
+
+  - DestinationPath: 'C:\Program Files (x86)\Amtelco\Unified Reports\urd.mdb'
+    Force: true
+    SourcePath: '\\mapcom.local\DscService\Resources\Scripts\HUBA4\Unified Reports\urd.mdb'
+    Type: File
+    checksum: CreatedDate
+    Ensure: Present
