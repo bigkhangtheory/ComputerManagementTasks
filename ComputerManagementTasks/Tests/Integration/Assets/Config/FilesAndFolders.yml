@@ -1,16 +1,24 @@
 Items:
-  - DestinationPath: C:\Program Files (x86)\Amtelco\Unified Reports
+  - DestinationPath: C:\Test.txt
     Contents: Test Content
     Ensure: Present
     Force: true
     Type: File
-  - DestinationPath: C:\ProgramData\chocolatey
+  - DestinationPath: C:\Test
     Ensure: Present
     Force: true
     Recurse: true
     SourcePath: C:\Source
     Type: Directory
-  - DestinationPath: C:\Support
+  - DestinationPath: C:\TestShare
     Ensure: Present
     Force: true
     Type: Directory
+    Permissions:
+      - Identity: Administrators
+        Rights:   FullControl
+      - Identity: Users
+        Rights:
+          - Read
+          - Write
+          - ExecuteFile

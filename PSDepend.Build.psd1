@@ -73,6 +73,12 @@
     DSCR_MSLicense               = '0.9.1'
     # PowerShell DSC Resource to set Windows / Office product key.
 
+    DSCR_PowerPlan               = '1.3.0'
+    # PowerShell DSC Resource for Power Plan configuration
+
+    FileSystemDsc                = '1.1.1'
+    # This module contains DSC resources for managing file systems.
+
     GPRegistryPolicyDsc          = '1.2.0'
     # This resource module contains DSC resources used to apply and manage local group policies by modifying the respective .pol file.
     
