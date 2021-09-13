@@ -1,0 +1,14 @@
+Items:
+  - Path: C:\Users\Public\Desktop\MyShortcut1.lnk
+    Target: C:\Tools\my_program1.bat
+    WorkingDirectory: C:\Tools
+    Ensure: Present
+
+  - Path: C:\Users\Public\Desktop\MyShortcut2.lnk
+    Target: C:\Tools\my_program2.bat
+    WorkingDirectory: C:\Tools
+
+  - Path: C:\Users\Public\Desktop\MyShortcut3.lnk
+    Target: C:\Tools\my_program3.bat
+    WorkingDirectory: C:\Tools
+    Ensure: Absent

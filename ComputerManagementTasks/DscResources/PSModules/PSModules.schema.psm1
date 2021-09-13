@@ -10,37 +10,23 @@ configuration PSModules
     (
         [Parameter()]
         [System.Collections.Hashtable[]]
-        $Modules
+        $Modules,
 
-        <#
         [Parameter()]
         [System.Collections.Hashtable[]]
-        $Repositories
-        #>
+        $Repos
     )
 
     Import-DscResource -Module PSDesiredStateConfiguration
     Import-DscResource -ModuleName PSModulesDsc
 
 
-    <#
+    
     # Add, remove or update PSRepositories for the system context.
-    if ($null -ne $Repositories)
+    if ($Repos)
     {
-        foreach ($r in $Repositories)
+        foreach ($r in $Repos)
         {
-            # repository must have a name, otherwise fail and exit
-            if ($null -eq $r.Name)
-            {
-                throw 'ERROR: The PS Repository must be provided with a name.'
-            }
-
-            # InstallationPolicy must be either 'Trusted' or 'Untrusted'
-            if (-not ($r.Installation -eq 'Trusted' -or $r.InstallationPolicy -eq 'Untrusted'))
-            {
-                throw "ERROR: The Installation Policy must be either 'Trusted' or 'Untrusted'."
-            }
-
             # remove case sensitivity of ordered Dictionary or Hashtables
             $r = @{ } + $r
 
@@ -63,7 +49,7 @@ configuration PSModules
             }
         }
     }
-    #>
+
 
     # Add or remove repository-based Powershell modules from the system.
     if ($Modules)

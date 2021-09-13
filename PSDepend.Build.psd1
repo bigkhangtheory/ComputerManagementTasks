@@ -28,7 +28,7 @@
     DscBuildHelpers              = 'latest'
     # Build Helpers for DSC Resources and Configurations
 
-    InvokeBuild                  = 'latest'
+    InvokeBuild                  = '5.8.4'
     # Build and test automation in PowerShell
 
     Pester                       = '4.10.1'
@@ -61,15 +61,15 @@
 
     CertificateDsc               = '5.1.0'
     # DSC resources for managing certificates on a Windows Server.
-
-    cChoco                       = '2.5.0.0'
-    # Chocolatey DSC Resources for use with internal packages and the community package repository.
     
     Chocolatey                   = '0.0.79'
 
     ComputerManagementDsc        = '8.4.0'
     # DSC resources for configuration of a Windows computer.
 
+    DSCR_Shortcut                = '2.2.0'
+    # PowerShell DSC Resource to create shortcut file (LNK file).
+    
     DSCR_MSLicense               = '0.9.1'
     # PowerShell DSC Resource to set Windows / Office product key.
 
@@ -89,8 +89,7 @@
     
     SChannelDsc                  = '1.2.2'
     # The SChannelDsc PowerShell module provides DSC resources that can be used to manage SChannel settings.
-
-    
+ 
     StorageDsc                   = '5.0.1'
 
     WSManDsc                     = '3.1.1'
