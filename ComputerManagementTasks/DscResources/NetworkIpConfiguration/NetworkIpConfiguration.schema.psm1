@@ -6,24 +6,22 @@
 #Requires -Module NetworkingDsc
 
 
-configuration NetworkIpConfiguration
-{
-    param
-    (
-        [Parameter()]
-        [System.Boolean]
+configuration NetworkIpConfiguration {
+    param (
+        [parameter()]
+        [boolean]
         $DisableNetBios = $false,
         
-        [Parameter()]
+        [parameter()]
         [int16]
         $ConfigureIPv6 = -1, # < 0 -> no configuration code will be generated
  
-        [Parameter()]
-        [System.Collections.Hashtable[]]
+        [parameter()]
+        [hashtable[]]
         $Interfaces,
 
-        [Parameter()]
-        [System.Collections.Hashtable[]]
+        [parameter()]
+        [hashtable[]]
         $Routes
     )
     
@@ -57,14 +55,14 @@ configuration NetworkIpConfiguration
                 throw "ERROR: Enabled DHCP requires empty 'IpAddress' ($IpAddress), 'Gateway' ($Gateway) and 'DnsServer' ($DnsServer) parameters for interface '$InterfaceAlias'."
             }
 
-            Get-NetIPInterface "EnableDhcp_$($InterfaceAlias -replace '[-().:\s]', '_')"
+            NetIPInterface "EnableDhcp_$InterfaceAlias"
             {
                 InterfaceAlias = $InterfaceAlias
                 AddressFamily  = 'IPv4'
                 Dhcp           = 'Enabled'
             }
 
-            DnsServerAddress "EnableDhcpDNS_$($InterfaceAlias -replace '[-().:\s]', '_')"
+            DnsServerAddress "EnableDhcpDNS_$InterfaceAlias"
             {
                 InterfaceAlias = $InterfaceAlias
                 AddressFamily  = 'IPv4'
@@ -75,7 +73,7 @@ configuration NetworkIpConfiguration
             if ( -not [string]::IsNullOrWhiteSpace($IpAddress) )
             {
                 # disable DHCP if IP-Address is specified
-                Get-NetIPInterface "DisableDhcp_$($InterfaceAlias -replace '[-().:\s]', '_')"
+                NetIPInterface "DisableDhcp_$InterfaceAlias"
                 {
                     InterfaceAlias = $InterfaceAlias
                     AddressFamily  = 'IPv4'
@@ -89,7 +87,7 @@ configuration NetworkIpConfiguration
 
                 $ip = "$($IpAddress)/$($Prefix)"
 
-                IPAddress "NetworkIp_$($InterfaceAlias -replace '[-().:\s]', '_')" 
+                IPAddress "NetworkIp_$InterfaceAlias" 
                 {
                     IPAddress      = $ip
                     AddressFamily  = 'IPv4'
@@ -99,7 +97,7 @@ configuration NetworkIpConfiguration
 
             if ( -not [string]::IsNullOrWhiteSpace($Gateway) )
             {
-                DefaultGatewayAddress "DefaultGateway_$($InterfaceAlias -replace '[-().:\s]', '_')"
+                DefaultGatewayAddress "DefaultGateway_$InterfaceAlias"
                 {
                     AddressFamily  = 'IPv4'
                     InterfaceAlias = $InterfaceAlias
@@ -109,7 +107,7 @@ configuration NetworkIpConfiguration
 
             if ( $null -ne $DnsServer -and $DnsServer.Count -gt 0 )
             {
-                DnsServerAddress "DnsServers_$($InterfaceAlias -replace '[-().:\s]', '_')"
+                DnsServerAddress "DnsServers_$InterfaceAlias"
                 {
                     InterfaceAlias = $InterfaceAlias
                     AddressFamily  = 'IPv4'
@@ -120,7 +118,7 @@ configuration NetworkIpConfiguration
 
         if ( $null -ne $InterfaceMetric -and $InterfaceMetric -gt 0 )
         {
-            Script "InterfaceMetric_$($InterfaceAlias -replace '[-().:\s]', '_')"
+            Script "InterfaceMetric_$InterfaceAlias"
             {
                 TestScript = 
                 {
@@ -149,7 +147,7 @@ configuration NetworkIpConfiguration
             }
         }
 
-        WinsSetting "LmhostsLookup_$($InterfaceAlias -replace '[-().:\s]', '_')"
+        WinsSetting "LmhostsLookup_$InterfaceAlias"
         {
             EnableLmHosts    = $EnableLmhostsLookup
             IsSingleInstance = 'Yes'
@@ -157,7 +155,7 @@ configuration NetworkIpConfiguration
 
         if ($DisableNetbios)
         {
-            NetBios "DisableNetBios_$($InterfaceAlias -replace '[-().:\s]', '_')"
+            NetBios "DisableNetBios_$InterfaceAlias"
             {
                 InterfaceAlias = $InterfaceAlias
                 Setting        = 'Disable'
@@ -166,7 +164,7 @@ configuration NetworkIpConfiguration
 
         if ($DisableIPv6)
         {
-            Get-NetAdapterBinding "DisableIPv6_$($InterfaceAlias -replace '[-().:\s]', '_')"
+            NetAdapterBinding "DisableIPv6_$InterfaceAlias"
             {
                 InterfaceAlias = $InterfaceAlias
                 ComponentId    = 'ms_tcpip6'
@@ -181,7 +179,7 @@ configuration NetworkIpConfiguration
                 throw "ERROR: Invalid value of attribute 'NetworkCategory'."
             }
 
-            Script "NetworkCategory_$($InterfaceAlias -replace '[-().:\s]', '_')"
+            Script "NetworkCategory_$InterfaceAlias"
             {
                 TestScript = {
                     $val = Get-NetConnectionProfile -InterfaceAlias $using:InterfaceAlias

@@ -20,10 +20,6 @@ configuration WindowsServices
     Import-DscResource -ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName xPSDesiredStateConfiguration
 
-
-    <#
-        Enumerate each service
-    #>
     foreach ($service in $Services)
     {
         # Remove Case Sensitivity of ordered Dictionary or Hashtables
@@ -56,7 +52,7 @@ configuration WindowsServices
             {
                 $service.State = 'Ignore'
             }
-        } #end if
+        }
 
         $executionName = "winsvc_$($Service.Name -replace '[-().:$#\s]', '_')"
 
@@ -87,7 +83,7 @@ configuration WindowsServices
                 }
                 GetScript  = { return @{result = 'N/A' } }
                 DependsOn  = "[xService]$executionName"
-            } #end script
-        } #end if
-    } #end foreach
+            }  
+        }
+    }
 } #end configuration

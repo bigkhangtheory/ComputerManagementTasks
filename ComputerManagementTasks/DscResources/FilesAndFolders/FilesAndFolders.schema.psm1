@@ -4,7 +4,6 @@
 #>
 #Requires -Module FileSystemDsc
 
-
 configuration FilesAndFolders
 {
     param (
@@ -12,16 +11,10 @@ configuration FilesAndFolders
         [System.Collections.Hashtable[]]
         $Items
     )
- 
-    <#
-        Import required modules
-    #>
+    
     Import-DscResource -ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName FileSystemDsc
 
-    <#
-        Enumerate each entry for files and folders
-    #>
     foreach ($item in $Items)
     {
         $permissions = $null
@@ -40,10 +33,10 @@ configuration FilesAndFolders
             $item.Remove('Permissions')
         }
 
-        $executionName = "file_$($item.DestinationPath -replace '[-().(:|\\|/|\s)]', '_')"
+        $executionName = "File_$($item.DestinationPath -replace '[-().(:|\\|/|\s)]', '_')"
         (Get-DscSplattedResource -ResourceName File -ExecutionName $executionName -Properties $item -NoInvoke).Invoke($item)
 
-        if ( $null -ne $Permissions )
+        if ( $null -ne $permissions )
         {
             foreach ($perm in $permissions)
             {         
@@ -60,7 +53,7 @@ configuration FilesAndFolders
 
                 $permExecName = "$($executionName)__$($perm.Identity -replace '(:|\\|/|\s)', '_')"
                 (Get-DscSplattedResource -ResourceName FileSystemAccessRule -ExecutionName $permExecName -Properties $perm -NoInvoke).Invoke($perm)
-            } #end foreach
-        } #end if
-    } #end foreach
-} #end configuration
+            }
+        }
+    }
+}

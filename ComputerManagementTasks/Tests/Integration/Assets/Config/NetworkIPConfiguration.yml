@@ -1,4 +1,3 @@
-  
 DisableNetBios: true
 ConfigureIPv6: 32
 Interfaces:

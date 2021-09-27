@@ -34,7 +34,7 @@
     Import-DscResource -ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName ComputerManagementDsc
 
-    if( $PendingReboot -eq $true )
+    if ( $PendingReboot -eq $true )
     {
         PendingReboot CheckPendingReboot
         {
@@ -47,7 +47,7 @@
         }
     }
 
-    if( $ForceReboot -eq $true )
+    if ( $ForceReboot -eq $true )
     {
         $rebootKeyName = 'HKLM:\SOFTWARE\DSC Community\CommonTasks\RebootRequests'
         $rebootVarName = 'Reboot_RestartSystem'
@@ -63,15 +63,15 @@
                 }   
                 return $false
             }
-            SetScript = {
-                if( -not (Test-Path -Path $using:rebootKeyName) )
+            SetScript  = {
+                if ( -not (Test-Path -Path $using:rebootKeyName) )
                 {
                     New-Item -Path $using:rebootKeyName -Force
                 }
-                Set-ItemProperty -Path $rebootKeyName -Name $using:rebootVarName -value 1
+                Set-ItemProperty -Path $using:rebootKeyName -Name $using:rebootVarName -Value 1
                 $global:DSCMachineStatus = 1             
             }
-            GetScript = { return @{result = 'result'}}
+            GetScript  = { return @{result = 'result' } }
         }        
     }
 }
