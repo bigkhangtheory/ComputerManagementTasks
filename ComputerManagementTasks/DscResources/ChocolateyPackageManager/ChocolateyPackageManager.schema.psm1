@@ -4,19 +4,24 @@
 #>
 #Requires -Modules PSDesiredStateConfiguration, ComputerManagementDsc, Chocolatey
 
-configuration ChocolateyPackageManager {
+configuration ChocolateyPackageManager
+{
     param (
         [Parameter()]
-        [hashtable]$Software,
+        [System.Collections.Hashtable]
+        $Software,
 
         [Parameter()]
-        [hashtable[]]$Sources,
+        [System.Collections.Hashtable[]]
+        $Sources,
 
         [Parameter()]
-        [hashtable[]]$Packages,
+        [System.Collections.Hashtable[]]
+        $Packages,
 
         [Parameter()]
-        [hashtable[]]$Features
+        [System.Collections.Hashtable[]]
+        $Features
     )
 
     Import-DscResource -ModuleName PSDesiredStateConfiguration
@@ -52,7 +57,7 @@ configuration ChocolateyPackageManager {
                             $installDir = (Resolve-Path $installDir -ErrorAction Stop).Path
                         }
 
-                        if ($chocoCmd = Get-Command choco.exe -CommandType Application -ErrorAction SilentlyContinue)
+                        if ($chocoCmd = Get-Command 'choco.exe' -CommandType Application -ErrorAction SilentlyContinue)
                         {
                             if (
                                 !$installDir -or
@@ -99,7 +104,8 @@ configuration ChocolateyPackageManager {
 
                     if ( -not (Test-Path $using:swOfflineInstallZip) )
                     {
-                        throw "Offline installation package '$($using:swOfflineInstallZip)' not found."
+                        Write-Error "ERROR: Offline installation package '$($using:swOfflineInstallZip)' not found."
+                        return
                     }
 
                     # copy the package with zip extension
@@ -128,7 +134,8 @@ configuration ChocolateyPackageManager {
                         }
                         catch
                         {
-                            throw "Unable to unzip package using built-in compression. Error: `n $_"
+                            Write-Error "ERROR: Unable to unzip package using built-in compression. Error: `n $_"
+                            return
                         }
                     }
 
@@ -196,28 +203,7 @@ configuration ChocolateyPackageManager {
         (Get-DscSplattedResource -ResourceName ChocolateySoftware -ExecutionName $chocoSwExecName -Properties $Software -NoInvoke).Invoke($Software)
     }
 
-
-    # create DSC resource for Chocolatey features
-    if ( $null -ne $Features )
-    {
-        foreach ($f in $Features)
-        {
-            # Remove Case Sensitivity of ordered Dictionary or Hashtables
-            $f = @{} + $f
-
-            $executionName = $f.Name -replace '\(|\)|\.| ', ''
-            $executionName = "ChocolateyFeature_$executionName"
-            if (-not $f.ContainsKey('Ensure'))
-            {
-                $f.Ensure = 'Present'
-            }
-            (Get-DscSplattedResource -ResourceName ChocolateyFeature -ExecutionName $executionName -Properties $f -NoInvoke).Invoke($f)
-        }
-    }
-
-
-    # create DSC resource for Chocolatey sources
-    if ( $null -ne $Sources )
+    if ( $Sources -ne $null )
     {
         foreach ($s in $Sources)
         {
@@ -241,9 +227,7 @@ configuration ChocolateyPackageManager {
         }
     }
 
-
-    # create DSC resource for Chocolatey packages
-    if ( $null -ne $Packages )
+    if ( $Packages -ne $null )
     {
         $clonedPackageList = [System.Collections.ArrayList]@()
 
@@ -328,5 +312,20 @@ configuration ChocolateyPackageManager {
         }
     }
 
+    if ( $Features -ne $null )
+    {
+        foreach ($f in $Features)
+        {
+            # Remove Case Sensitivity of ordered Dictionary or Hashtables
+            $f = @{} + $f
 
+            $executionName = $f.Name -replace '\(|\)|\.| ', ''
+            $executionName = "ChocolateyFeature_$executionName"
+            if (-not $f.ContainsKey('Ensure'))
+            {
+                $f.Ensure = 'Present'
+            }
+            (Get-DscSplattedResource -ResourceName ChocolateyFeature -ExecutionName $executionName -Properties $f -NoInvoke).Invoke($f)
+        }
+    }
 }

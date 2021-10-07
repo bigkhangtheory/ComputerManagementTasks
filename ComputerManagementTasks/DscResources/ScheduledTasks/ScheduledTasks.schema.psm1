@@ -10,19 +10,39 @@
     Import-DscResource -ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName ComputerManagementDsc
 
-    foreach ( $task in $Tasks )
+    foreach ( $t in $Tasks )
     {
         # Remove Case Sensitivity of ordered Dictionary or Hashtables
-        $task = @{} + $task
+        $t = @{} + $t
 
-        if ( $null -ne $task.ExecuteAsCredential )
+        # if not specified, ensure 'Present'
+        if ([String]::IsNullOrWhiteSpace($t.Ensure))
         {
-            $task.ExecuteAsCredential = [PSCredential]$task.ExecuteAsCredential
+            $t.Ensure = 'Present'
+        }
+
+        # if not specified, enable
+        if ($null -eq $t.Enable)
+        {
+            $t.Enable = $true
+        }
+
+        if ( $null -ne $t.ExecuteAsCredential )
+        {
+            $t.ExecuteAsCredential = [PSCredential]$t.ExecuteAsCredential
             #$task.Remove( 'ExecuteAsCredential' )
         }
 
-        $executionName = "$($task.TaskName -replace '[().:\s]', '_')"
+        # create execution name for the resource
+        $executionName = "$($t.TaskName -replace '[().:\s]', '_')"
 
-        (Get-DscSplattedResource -ResourceName ScheduledTask -ExecutionName $executionName -Properties $task -NoInvoke).Invoke($task)
-    }
-}
+        # create DSC resource
+        $Splatting = @{
+            ResourceName  = 'ScheduledTask'
+            ExecutionName = $executionName
+            Properties    = $t
+            NoInvoke      = $true
+        }
+        (Get-DscSplattedResource @Splatting).Invoke($t)
+    } #end foreach
+} #end configuration
