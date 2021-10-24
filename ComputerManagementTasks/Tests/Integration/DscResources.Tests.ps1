@@ -1,6 +1,6 @@
 Import-Module -Name $PSScriptRoot\Assets\TestHelpers.psm1
 
-$dscResources = Get-DscResource -Module CommonTasks
+$dscResources = Get-DscResource -Module ComputerManagementTasks
 Init
 
 $skippedDscResources = 'ConfigurationManagerDeployment'
@@ -39,7 +39,7 @@ f1
 
             configuration "Config_$dscResourceName" {
 
-                Import-DscResource -ModuleName CommonTasks
+                Import-DscResource -ModuleName ComputerManagementTasks
 
                 node "localhost_$dscResourceName" {
 
@@ -77,7 +77,7 @@ f1
 
 Describe 'Final tests' -Tags FunctionalQuality {
     BeforeAll {
-        $compositeResouces = Get-DscResource -Module CommonTasks
+        $compositeResouces = Get-DscResource -Module ComputerManagementTasks
         Write-Host "Number of composite resources: $($compositeResouces.Count)"
         $compositeResouces = $compositeResouces | Where-Object Name -NotIn $skippedDscResources
         Write-Host "Number of composite resources (considering 'skippedDscResources'): $($compositeResouces.Count)"
