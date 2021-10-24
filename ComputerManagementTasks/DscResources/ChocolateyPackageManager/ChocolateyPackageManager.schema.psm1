@@ -6,22 +6,30 @@
 
 configuration ChocolateyPackageManager
 {
-    param (
+    param
+    (
         [Parameter()]
         [System.Collections.Hashtable]
         $Software,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.Collections.Hashtable[]]
         $Sources,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.Collections.Hashtable[]]
-        $Packages,
+        $Features,
 
         [Parameter()]
+        [System.Boolean]
+        $ForceRebootBefore = $false,
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.Collections.Hashtable[]]
-        $Features
+        $Packages
     )
 
     Import-DscResource -ModuleName PSDesiredStateConfiguration
@@ -38,7 +46,7 @@ configuration ChocolateyPackageManager
             # reduce footprint of serialized script parameter objects
             $swInstallationDirectory = $Software.InstallationDirectory
             $swOfflineInstallZip = $Software.OfflineInstallZip
-            
+
             Script OfflineInstallChocolatey
             {
                 TestScript = {
@@ -57,7 +65,7 @@ configuration ChocolateyPackageManager
                             $installDir = (Resolve-Path $installDir -ErrorAction Stop).Path
                         }
 
-                        if ($chocoCmd = Get-Command 'choco.exe' -CommandType Application -ErrorAction SilentlyContinue)
+                        if ($chocoCmd = Get-Command choco.exe -CommandType Application -ErrorAction SilentlyContinue)
                         {
                             if (
                                 !$installDir -or
@@ -227,6 +235,51 @@ configuration ChocolateyPackageManager
         }
     }
 
+    if ( $Features -ne $null )
+    {
+        foreach ($f in $Features)
+        {
+            # Remove Case Sensitivity of ordered Dictionary or Hashtables
+            $f = @{} + $f
+
+            $executionName = $f.Name -replace '\(|\)|\.| ', ''
+            $executionName = "ChocolateyFeature_$executionName"
+            if (-not $f.ContainsKey('Ensure'))
+            {
+                $f.Ensure = 'Present'
+            }
+            (Get-DscSplattedResource -ResourceName ChocolateyFeature -ExecutionName $executionName -Properties $f -NoInvoke).Invoke($f)
+        }
+    }
+
+    if ($ForceRebootBefore -eq $true)
+    {
+        $rebootKeyName = 'HKLM:\SOFTWARE\DSC Community\CommonTasks\RebootRequests'
+        $rebootVarName = 'RebootBefore_ChocolateyPackages'
+
+        Script $rebootVarName
+        {
+            TestScript = {
+                $val = Get-ItemProperty -Path $using:rebootKeyName -Name $using:rebootVarName -ErrorAction SilentlyContinue
+
+                if ($val -ne $null -and $val.$rebootVarName -gt 0)
+                {
+                    return $true
+                }
+                return $false
+            }
+            SetScript  = {
+                if ( -not (Test-Path -Path $using:rebootKeyName) )
+                {
+                    New-Item -Path $using:rebootKeyName -Force
+                }
+                Set-ItemProperty -Path $rebootKeyName -Name $using:rebootVarName -Value 1
+                $global:DSCMachineStatus = 1
+            }
+            GetScript  = { return @{result = 'result' } }
+        }
+    }
+
     if ( $Packages -ne $null )
     {
         $clonedPackageList = [System.Collections.ArrayList]@()
@@ -251,7 +304,7 @@ configuration ChocolateyPackageManager
                 $p.Rank = [UInt64]($p.Rank * 100000 + $i)
             }
 
-            $clonedPackageList.Add( $p ) 
+            $clonedPackageList.Add( $p )
         }
 
         foreach ($p in ($clonedPackageList | Sort-Object { [UInt64]($_.Rank) }) )
@@ -309,23 +362,6 @@ configuration ChocolateyPackageManager
                     DependsOn  = "[ChocolateyPackage]$executionName"
                 }
             }
-        }
-    }
-
-    if ( $Features -ne $null )
-    {
-        foreach ($f in $Features)
-        {
-            # Remove Case Sensitivity of ordered Dictionary or Hashtables
-            $f = @{} + $f
-
-            $executionName = $f.Name -replace '\(|\)|\.| ', ''
-            $executionName = "ChocolateyFeature_$executionName"
-            if (-not $f.ContainsKey('Ensure'))
-            {
-                $f.Ensure = 'Present'
-            }
-            (Get-DscSplattedResource -ResourceName ChocolateyFeature -ExecutionName $executionName -Properties $f -NoInvoke).Invoke($f)
         }
     }
 }

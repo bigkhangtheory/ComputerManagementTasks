@@ -12,7 +12,7 @@
     # -------------------------------------------------------------------------
     # PowerShell Modules
     # -------------------------------------------------------------------------
-    
+
     BuildHelpers                 = 'latest'
     # Helper functions for PowerShell CI/CD scenarios
 
@@ -43,7 +43,7 @@
     'powershell-yaml'            = 'latest'
     # Powershell module for serializing and deserializing YAML
 
-    ProtectedData                = '4.1.3'
+    ProtectedData                = 'latest'
     # Encrypt and share secret data between different users and computers.
 
     PSScriptAnalyzer             = 'latest'
@@ -55,13 +55,13 @@
     # -------------------------------------------------------------------------
     # DSC Resources
     # ------------------------------------------------------------------------
-    
+
     AccessControlDsc             = '1.4.1'
     # Module with DSC resource to manage Registry and NTFS access entries and manage Active Directory SACL
 
     CertificateDsc               = '5.1.0'
     # DSC resources for managing certificates on a Windows Server.
-    
+
     Chocolatey                   = '0.0.79'
 
     ComputerManagementDsc        = '8.4.0'
@@ -69,7 +69,7 @@
 
     DSCR_Shortcut                = '2.2.0'
     # PowerShell DSC Resource to create shortcut file (LNK file).
-    
+
     DSCR_MSLicense               = '0.9.1'
     # PowerShell DSC Resource to set Windows / Office product key.
 
@@ -81,15 +81,15 @@
 
     GPRegistryPolicyDsc          = '1.2.0'
     # This resource module contains DSC resources used to apply and manage local group policies by modifying the respective .pol file.
-    
+
     NetworkingDsc                = '8.2.0'
 
-    PSModulesDsc                 = '1.0.13.0'
-    # DSC module to manage Powershell modules and repositories.
-    
+    PowerShellGet                = '2.2.5'
+    # PowerShell module with commands for discovering, installing, updating and publishing the PowerShell artifacts like Modules, Scripts, and DSC Resources.
+
     SChannelDsc                  = '1.2.2'
     # The SChannelDsc PowerShell module provides DSC resources that can be used to manage SChannel settings.
- 
+
     StorageDsc                   = '5.0.1'
 
     WSManDsc                     = '3.1.1'

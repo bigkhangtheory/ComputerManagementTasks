@@ -11,7 +11,7 @@ configuration FilesAndFolders
         [System.Collections.Hashtable[]]
         $Items
     )
-    
+
     Import-DscResource -ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName FileSystemDsc
 
@@ -33,13 +33,27 @@ configuration FilesAndFolders
             $item.Remove('Permissions')
         }
 
-        $executionName = "File_$($item.DestinationPath -replace '[-().(:|\\|/|\s)]', '_')"
+        if ( $item.ContainsKey('ContentFromFile') )
+        {
+            if ( -not (Test-Path -Path $item.ContentFromFile) )
+            {
+                Write-Host "ERROR: Content file '$($item.ContentFromFile)' not found. Current working directory is: $(Get-Location)" -ForegroundColor Red
+            }
+            else
+            {
+                [string]$content = Get-Content -Path $item.ContentFromFile -Raw
+                $item.Contents += $content
+            }
+            $item.Remove('ContentFromFile')
+        }
+
+        $executionName = "file_$($item.DestinationPath)" -replace '[\s(){}/\\:-]', '_'
         (Get-DscSplattedResource -ResourceName File -ExecutionName $executionName -Properties $item -NoInvoke).Invoke($item)
 
         if ( $null -ne $permissions )
         {
             foreach ($perm in $permissions)
-            {         
+            {
                 # Remove Case Sensitivity of ordered Dictionary or Hashtables
                 $perm = @{} + $perm
 
@@ -51,7 +65,7 @@ configuration FilesAndFolders
                     $perm.Ensure = 'Present'
                 }
 
-                $permExecName = "$($executionName)__$($perm.Identity -replace '(:|\\|/|\s)', '_')"
+                $permExecName = "$($executionName)__$($perm.Identity)" -replace '[\s(){}/\\:-]', '_'
                 (Get-DscSplattedResource -ResourceName FileSystemAccessRule -ExecutionName $permExecName -Properties $perm -NoInvoke).Invoke($perm)
             }
         }

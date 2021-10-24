@@ -1,5 +1,6 @@
-[cmdletBinding()]
-Param (
+[CmdletBinding()]
+param
+(
     [Parameter(Position = 0)]
     $Tasks,
 
@@ -97,7 +98,7 @@ if (-not $Tasks) {
     IntegrationTest,
     Deploy,
     TestReleaseAcceptance
- 
+
 } else {
     task . $Tasks
 }

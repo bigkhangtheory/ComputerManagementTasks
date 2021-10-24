@@ -12,7 +12,7 @@
     RootModule           = 'FilesAndFolders.schema.psm1'
 
     # Version number of this module.
-    ModuleVersion        = '2021.8.0'
+    ModuleVersion        = '2021.10.0'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -95,7 +95,7 @@
         PSData = @{
 
             # Tags applied to this module. These help with module discovery in online galleries.
-            Tags       = 'powershell', 'dsc', 'composite resource', 'configuration', 
+            Tags       = 'powershell', 'dsc', 'composite resource', 'configuration',
             'computer management'
 
             # A URL to the license for this module.
