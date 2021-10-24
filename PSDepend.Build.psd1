@@ -87,7 +87,7 @@
     PackageManagement            = '1.4.7'
     #
 
-    PowerShellGet                = '2.2.5'
+    #PowerShellGet                = '2.2.5'
     # PowerShell module with commands for discovering, installing, updating and publishing the PowerShell artifacts like Modules, Scripts, and DSC Resources.
 
     SChannelDsc                  = '1.2.2'
