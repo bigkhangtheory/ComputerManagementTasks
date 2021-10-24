@@ -1,7 +1,7 @@
 # =============================================================================
 stages:
   - build
-#  - test 
+#  - test
 #  - staging
 #  - deploy
 
@@ -30,7 +30,7 @@ cache: &global_cache
 build:depends:
   stage: build
   script:
-    - .\Build.ps1 -ResolveDependency
+    - .\Build.ps1 -Tasks Init,CleanBuildOutput,DownloadDscResources,SetPSModulePath,CopyModule,IntegrationTests,Deploy,TestReleaseAcceptance
   cache:
     # inherit all global cache settings
     <<: *global_cache
