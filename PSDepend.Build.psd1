@@ -28,7 +28,7 @@
     DscBuildHelpers              = 'latest'
     # Build Helpers for DSC Resources and Configurations
 
-    InvokeBuild                  = '5.8.4'
+    InvokeBuild                  = 'latest'
     # Build and test automation in PowerShell
 
     Pester                       = '4.10.1'
