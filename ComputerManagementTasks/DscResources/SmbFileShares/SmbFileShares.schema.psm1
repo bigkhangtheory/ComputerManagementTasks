@@ -12,7 +12,7 @@ configuration SmbFileShares
         $ServerConfiguration,
 
         [Parameter()]
-        [Sysstem.Collections.Hashtable[]]
+        [System.Collections.Hashtable[]]
         $Shares
     )
 
