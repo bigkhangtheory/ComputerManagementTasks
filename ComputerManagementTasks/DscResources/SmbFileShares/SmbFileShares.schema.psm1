@@ -8,28 +8,26 @@ configuration SmbFileShares
         $HostOS = 'Server',
 
         [Parameter()]
-        [ValidateNotNullOrEmpty()]
         [System.Collections.Hashtable]
         $ServerConfiguration,
 
         [Parameter()]
-        [ValidateNotNullOrEmpty()]
         [Sysstem.Collections.Hashtable[]]
         $Shares
     )
 
-    Import-DscResource -ModuleName xPSDesiredStateConfiguration
+    Import-DscResource -ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName ComputerManagementDsc
 
     if( $HostOS -eq 'Server' )
     {
-        xWindowsFeature featureFileServer
+        WindowsFeature featureFileServer
         {
             Name   = 'FS-FileServer'
             Ensure = 'Present'
         }
 
-        $featureFileServer = '[xWindowsFeature]featureFileServer'
+        $featureFileServer = '[WindowsFeature]featureFileServer'
     }
 
     if( $null -ne $ServerConfiguration )
@@ -38,7 +36,7 @@ configuration SmbFileShares
         {
             if( $ServerConfiguration.EnableSMB1Protocol -eq $false )
             {
-                xWindowsFeature removeSMB1
+                WindowsFeature removeSMB1
                 {
                     Name      = 'FS-SMB1'
                     Ensure    = 'Absent'
@@ -82,7 +80,7 @@ configuration SmbFileShares
 
                 if( $null -ne $dirInfo.Parent )
                 {
-                    xFile "Folder_$shareId"
+                    File "Folder_$shareId"
                     {
                         DestinationPath = $share.Path
                         Type            = 'Directory'
@@ -90,7 +88,7 @@ configuration SmbFileShares
                         DependsOn       = $featureFileServer
                     }
 
-                    $share.DependsOn = "[xFile]Folder_$shareId"
+                    $share.DependsOn = "[File]Folder_$shareId"
                 }
             }
             elseif ( [string]::IsNullOrWhiteSpace($share.Path) )
