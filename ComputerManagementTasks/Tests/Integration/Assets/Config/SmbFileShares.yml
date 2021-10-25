@@ -1,6 +1,4 @@
-﻿66 lines (66 sloc)  1.63 KB
-
-ServerConfiguration:
+﻿ServerConfiguration:
   AnnounceComment: SMB server hello
   AnnounceServer: true
   AsynchronousCredits: 64
