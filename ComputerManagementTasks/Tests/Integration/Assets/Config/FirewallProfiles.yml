@@ -1,7 +1,22 @@
-Profile:
-  Name: Private
-  Enabled: True
-  DefaultInboundAction: Block
-  DefaultOutboundAction: Allow
-  AllowInboundRules: True
-  AllowLocalFirewallRules: False
+Profiles:
+  - Name: Domain
+    Enabled: true
+    DefaultInboundAction: Block
+    DefaultOutboundAction: Allow
+    AllowInboundRules: true
+    AllowLocalFirewallRules: true
+    AllowUserApps: true
+    AllowUserPorts: true
+    NotifyOnListen: true
+    LogFileName: C:\Windows\System32\LogFiles\Firewall\firewall.log
+    LogMaxSizeKilobytes: 16384
+    LogAllowed: false
+    LogBlocked: true
+    LogIgnored: NotConfigured
+
+  - Name: Private
+    Enabled: True
+    DefaultInboundAction: Block
+    DefaultOutboundAction: Allow
+    AllowInboundRules: True
+    AllowLocalFirewallRules: False

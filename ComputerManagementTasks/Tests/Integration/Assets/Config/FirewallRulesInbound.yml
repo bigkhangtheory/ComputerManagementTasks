@@ -1,0 +1,190 @@
+PredefinedGroups:
+  - DisplayGroup: Active Directory Domain Services
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Active Directory Web Services
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: AllJoyn Router
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: BranchCache - Content Retrieval (Uses HTTP)
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: BranchCache - Hosted Cache Client (Uses HTTPS)
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: BranchCache - Hosted Cache Server (Uses HTTPS)
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: BranchCache - Peer Discovery (Uses WSD)
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: COM+ Network Access
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: COM+ Remote Administration
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Core Networking
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Delivery Optimization
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: DFS Management
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: DFS Replication
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: DiagTrack
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: DIAL protocol server
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Distributed Transaction Coordinator
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: DNS Service
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Email and accounts
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: File and Printer Sharing
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: File and Printer Sharing over SMBDirect
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: File Replication
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: File Server Remote Management
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: iSCSI Service
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Kerberos Key Distribution Center
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Key Management Service
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: mDNS
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Microsoft Key Distribution Service
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Netlogon Service
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Network Discovery
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: OpenSSH Server
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Performance Logs and Alerts
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Remote Desktop
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Remote Desktop (WebSocket)
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Remote Event Log Management
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Remote Event Monitor
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Remote Scheduled Tasks Management
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Remote Service Management
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Remote Shutdown
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Remote Volume Management
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Routing and Remote Access
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Secure Socket Tunneling Protocol
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Shell Input Application
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: SNMP Service
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: SNMP Trap
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Software Load Balancer
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: System Insights
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: TPM Virtual Smart Card Management
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Virtual Machine Monitoring
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Windows Default Lock Screen
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Windows Defender Firewall Remote Management
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Windows Defender SmartScreen
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Windows Device Management
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Windows Management Instrumentation (WMI)
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Windows Media Player
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Windows Media Player Network Sharing Service
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Windows Media Player Network Sharing Service (Internet)
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Windows Remote Management
+    Enabled: true
+    Ensure: Present
+  - DisplayGroup: Windows Remote Management (Compatibility)
+    Enabled: true
+    Ensure: Present
+InboundRules:
+  - Name: Any-AnyTest
+    DisplayName: Any-Any Test
+    Enabled: "True"
+    Description: Allow All Inbound Trafic
+    Direction: Inbound
+    Profile: Any
+    Action: Allow
+    LocalPort: Any
+    RemotePort: Any
+    Protocol: Any
+    RemoteMachines:
+      - MAPCOM\Domain Computers
+    RemoteUsers:
+      - MAPCOM\Domain Users

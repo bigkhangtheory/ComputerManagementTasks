@@ -30,7 +30,7 @@
     Copyright            = '(c) Khang M. Nguyen. All rights reserved.'
 
     # Description of the functionality provided by this module
-    Description          = 'This module is a re-usable DSC Configuration for managing FilesAndFolders on computer systems'
+    Description          = 'Manages the creation and content of files and folders on the target node.'
 
     # Minimum version of the PowerShell engine required by this module
     PowerShellVersion    = '5.1'

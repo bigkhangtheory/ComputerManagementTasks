@@ -21,14 +21,8 @@
       "*.mof": "json"
     },
     "editor.inlineHints.fontFamily": "'CaskaydiaCove NF',Consolas, 'Courier New', monospace",
-    "powershell.scriptAnalysis.settingsPath": ".\\PSScriptAnalyzerSettings.psd1",
-    "editor.fontSize": 12,
-    "powershell.buttons.showPanelMovementButtons": true,
-    "powershell.codeFormatting.whitespaceAroundPipe": false,
-    "powershell.pester.useLegacyCodeLens": false,
-    "powershell.startAutomatically": false,
-    "poshProTools.checkForModuleUpdates": true,
-    "poshProTools.license": "PD94bWwgdmVyc2lvbj0iMS4wIj8+CjxMaWNlbnNlVGVybXMgeG1sbnM6eHNpPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL1hNTFNjaGVtYS1pbnN0YW5jZSIgeG1sbnM6eHNkPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL1hNTFNjaGVtYSI+CiAgPFN0YXJ0RGF0ZT4yMDIxLTEwLTA3VDAyOjMwOjA4Ljg3Mzc2NDJaPC9TdGFydERhdGU+CiAgPFVzZXJOYW1lPmtuZ3V5ZW5AbWFwY29tbXVuaWNhdGlvbnMuY29tPC9Vc2VyTmFtZT4KICA8UHJvZHVjdE5hbWU+UG93ZXJTaGVsbFByb1Rvb2xzX05ldzwvUHJvZHVjdE5hbWU+CiAgPEVuZERhdGU+MjAyMi0xMC0wN1QwMDowMDowMDwvRW5kRGF0ZT4KICA8U2VhdE51bWJlcj4xPC9TZWF0TnVtYmVyPgogIDxJc1RyaWFsPmZhbHNlPC9Jc1RyaWFsPgogIDxTdWJzY3JpcHRpb25JZD5iTzRlbWRQU1RDU3pCVldYOGhsTVNBPC9TdWJzY3JpcHRpb25JZD4KPC9MaWNlbnNlVGVybXM+</Terms><Signature>SCnQJk20ZfVKChjpWiiwZv0wuqaZbdhUZKXfQmJDYEAsnWCoZHcUTA==",
-    "terminal.integrated.fontSize": 12
+    "html.format.endWithNewline": true,
+    "yaml.format.enable": false,
+    "editor.fontSize": 12
   }
 }

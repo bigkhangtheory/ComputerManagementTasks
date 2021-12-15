@@ -30,7 +30,7 @@ CompanyName = 'MAP Communications, Inc.'
 Copyright = '(c) Khang M. Nguyen. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'This module is a re-usable DSC Configuration for managing EnvironmentVariables on computer systems'
+Description = 'Used to create and managed System Environment variables on target nodes.'
 
 # Minimum version of the PowerShell engine required by this module
 PowerShellVersion = '5.1'
@@ -95,7 +95,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = 'powershell', 'dsc', 'composite resource', 'configuration', 
+        Tags = 'powershell', 'dsc', 'composite resource', 'configuration',
                'computer management'
 
         # A URL to the license for this module.

@@ -30,7 +30,7 @@
     Copyright            = '(c) Khang M. Nguyen. All rights reserved.'
 
     # Description of the functionality provided by this module
-    Description          = 'This module is a re-usable DSC Configuration for managing ComputerSettings on computer systems'
+    Description          = 'Configures a computer by changing its name and description and modifying its Active Directory domain or workgroup membership.'
 
     # Minimum version of the PowerShell engine required by this module
     PowerShellVersion    = '5.1'
@@ -95,7 +95,7 @@
         PSData = @{
 
             # Tags applied to this module. These help with module discovery in online galleries.
-            Tags       = 'powershell', 'dsc', 'composite resource', 'configuration', 
+            Tags       = 'powershell', 'dsc', 'composite resource', 'configuration',
             'computer management'
 
             # A URL to the license for this module.

@@ -30,7 +30,7 @@ CompanyName = 'MAP Communications, Inc.'
 Copyright = '(c) Khang M. Nguyen. All rights reserved.'
 
 # Description of the functionality provided by this module
-# Description = ''
+Description = 'Manages the remote desktop administration settings on a computer.'
 
 # Minimum version of the PowerShell engine required by this module
 # PowerShellVersion = ''
