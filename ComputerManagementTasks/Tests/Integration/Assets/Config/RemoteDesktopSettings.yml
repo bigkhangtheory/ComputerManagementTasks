@@ -1,2 +1,5 @@
 RemoteConnections: true
 NetworkLevelAuthentication: true
+IdleTimeLimit: 15 minutes
+DisconnectedTimeLimit: 8 hours
+EndSessionAfterIdle: true
