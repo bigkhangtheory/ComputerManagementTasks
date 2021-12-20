@@ -68,7 +68,7 @@ configuration ComputerSettings
         [System.String]
         $SystemLocale
     )
-    
+
     Import-DscResource -ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName ComputerManagementDsc
 
@@ -94,7 +94,7 @@ configuration ComputerSettings
         'WorkGroupName'
     )
 
-    
+
     <#
         Create DSC resource for Computer
     #>
@@ -104,8 +104,8 @@ configuration ComputerSettings
         $params.Add($item.Key, $item.Value)
     }
     (Get-DscSplattedResource -ResourceName Computer -ExecutionName "Computer$($params.Name)" -Properties $params -NoInvoke).Invoke($params)
-    
-    
+
+
     <#
         Create DSC resource for TimeZone
     #>
@@ -120,7 +120,7 @@ configuration ComputerSettings
 
 
     <#
-        Create DSC resource for Power Plan 
+        Create DSC resource for Power Plan
     #>
     if ($PowerPlan)
     {

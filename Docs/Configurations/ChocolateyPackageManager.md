@@ -1,12 +1,15 @@
-﻿# Overview
+﻿# ChocolateyPackageManager
 
 The **ChocolateyPackageManager** configuration is used to management *Chocolatey* installations and application packages on target nodes.
 
-|                   |                                                                                                                                                         |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Source**        | https://prod1gitlab.mapcom.local/dsc/configurations/ComputerManagementTasks/-/tree/master/ComputerManagementTasks/DscResources/ChocolateyPackageManager |
-|                   |
-| **DSC Resources** | [Chocolatey][Chocolatey], [ComputerManagementDsc][ComputerManagementDsc]                                                                                |
+<br />
+
+## Project Information
+
+|                  |                                                                                                                                     |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| **Source**       | https://github.com/bigkhangtheory/ComputerManagementTasks/tree/master/ComputerManagementTasks/DscResources/ChocolateyPackageManager |
+| **Dependencies** | [Chocolatey][Chocolatey], [ComputerManagementDsc][ComputerManagementDsc]                                                            |
 
 <br />
 
@@ -27,11 +30,11 @@ The **ChocolateyPackageManager** configuration is used to management *Chocolatey
 
 | **Parameter**           | **Attribute** | **DataType** | **Description**                                                                                                               | **Allowed Values**                                          |
 | ----------------------- | ------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| `Ensure`                | Key           | `String`     | Specifies whether the Chocolatey Software should be installed on the machine or not.                                          | <ul><li>`Present` <i>Default</i></li><li>`Absent`</li></ul> |
-| `PackageFeedUrl`        | Write         | `String`     | Url of a Nuget feed where the Chocolatey software package is available. For example, https://community.chocolatey.org/api/v2/ |                                                             |
-| `Version`               | Write         | `String`     | Specific version of package available on the nuget Package Feed Url provided.                                                 |                                                             |
-| `ChocoTempDir`          | Write         | `String`     | Chocolatey Temp directory to unzip downloaded package during bootstrap.                                                       |                                                             |
-| `InstallationDirectory` | Write         | `String`     | Path where Chocolatey should be installed. Defaults to `C:\ProgramData\chocolatey`                                            |                                                             |
+| `Ensure`                | *Required*    | `String`     | Specifies whether the Chocolatey Software should be installed on the machine or not.                                          | <ul><li>`Present` <i>Default</i></li><li>`Absent`</li></ul> |
+| `PackageFeedUrl`        |               | `String`     | Url of a Nuget feed where the Chocolatey software package is available. For example, https://community.chocolatey.org/api/v2/ |                                                             |
+| `Version`               |               | `String`     | Specific version of package available on the nuget Package Feed Url provided.                                                 |                                                             |
+| `ChocoTempDir`          |               | `String`     | Chocolatey Temp directory to unzip downloaded package during bootstrap.                                                       |                                                             |
+| `InstallationDirectory` |               | `String`     | Path where Chocolatey should be installed. Defaults to `C:\ProgramData\chocolatey`                                            |                                                             |
 
 <br />
 
@@ -40,11 +43,11 @@ The **ChocolateyPackageManager** configuration is used to management *Chocolatey
 
 | **Parameter** | **Attribute** | **DataType** | **Description**                                                                                                                                               | **Allowed Values**                                          |
 | ------------- | ------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| `Name`        | Key           | `String`     | Folder path where the Chocolatey Software should be installed.                                                                                                |                                                             |
-| `Source`      | Write         | `String`     | URL of the Nuget source respository                                                                                                                           |                                                             |
-| `Priority`    | Write         | `SInt16`     | The priority order of this source as compared to other sources. All priorities greater than `0` will be evaluated first. A priority `1` gets evaluated first. |                                                             |
-| `Disabled`    | Write         | `Boolean`    | Specifies whether the Chocolatey source entry is enabled for package queries                                                                                  |                                                             |
-| `Ensure`      | Write         | `String`     | Specifies whether the defined Chocolatey source entry should be configured or removed                                                                         | <ul><li>`Present` <i>Default</i></li><li>`Absent`</li></ul> |
+| `Name`        | *Required*    | `String`     | Folder path where the Chocolatey Software should be installed.                                                                                                |                                                             |
+| `Source`      |               | `String`     | URL of the Nuget source respository                                                                                                                           |                                                             |
+| `Priority`    |               | `SInt16`     | The priority order of this source as compared to other sources. All priorities greater than `0` will be evaluated first. A priority `1` gets evaluated first. |                                                             |
+| `Disabled`    |               | `Boolean`    | Specifies whether the Chocolatey source entry is enabled for package queries                                                                                  |                                                             |
+| `Ensure`      |               | `String`     | Specifies whether the defined Chocolatey source entry should be configured or removed                                                                         | <ul><li>`Present` <i>Default</i></li><li>`Absent`</li></ul> |
 
 <br />
 
@@ -53,8 +56,8 @@ The **ChocolateyPackageManager** configuration is used to management *Chocolatey
 
 | **Parameter** | **Attribute** | **DataType** | **Description**                                                         | **Allowed Values**                                                   |
 | ------------- | ------------- | ------------ | ----------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| `Name`        | Key           | `String`     | Specifes the name of the Chocolatey Feature to configure                | [See Chocolatey features table below](####chocolatey-features-table) |
-| `Ensure`      | Key           | `String`     | Specifies whether the Chocolatey Feature should be enabled or disabled. | <ul><li>`Present` <i>Default</i></li><li>`Absent`</li></ul>          |
+| `Name`        | *Required*    | `String`     | Specifes the name of the Chocolatey Feature to configure                | [See Chocolatey features table below](####chocolatey-features-table) |
+| `Ensure`      | *Required*    | `String`     | Specifies whether the Chocolatey Feature should be enabled or disabled. | <ul><li>`Present` <i>Default</i></li><li>`Absent`</li></ul>          |
 
 #### Chocolatey Features Table
 
@@ -150,5 +153,6 @@ lookup_options:
       tuple_keys:
         - Name
 ```
+
 [Chocolatey]: https://github.com/chocolatey-community/Chocolatey/
 [ComputerManagementDsc]: https://github.com/dsccommunity/ComputerManagementDsc

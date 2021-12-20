@@ -6,11 +6,11 @@ The **RemoteDesktopSettings** resource will manage the remote desktop administra
 
 ## Project Information
 
-|                  |                                                                                                                                                      |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Source**       | https://prod1gitlab.mapcom.local/dsc/configurations/ComputerManagementTasks/-/tree/master/ComputerManagementTasks/DscResources/RemoteDesktopSettings |
-| **Dependencies** | [ComputerManagementDsc][ComputerManagementDsc], [xPSDesiredStateConfiguration][xPSDesiredStateConfiguration]                                         |
-| **Resources**    | [RemoteDesktopAdmin][RemoteDesktopAdmin], [xRegistry][xRegistry]                                                                                     |
+|                  |                                                                                                                                  |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **Source**       | https://github.com/bigkhangtheory/ComputerManagementTasks/tree/master/ComputerManagementTasks/DscResources/RemoteDesktopSettings |
+| **Dependencies** | [ComputerManagementDsc][ComputerManagementDsc], [xPSDesiredStateConfiguration][xPSDesiredStateConfiguration]                     |
+| **Resources**    | [RemoteDesktopAdmin][RemoteDesktopAdmin], [xRegistry][xRegistry]                                                                 |
 
 <br />
 

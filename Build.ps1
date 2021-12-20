@@ -104,5 +104,5 @@ if (-not $Tasks) {
 }
 
 Write-Host 'Running the folling tasks:' -ForegroundColor Magenta
-${*}.All[-1].Jobs | ForEach-Object { "`t$_" } | Write-Host
+${*}.All[-1].Jobs | ForEach-Object { "`t$_" } | -Host
 Write-Host

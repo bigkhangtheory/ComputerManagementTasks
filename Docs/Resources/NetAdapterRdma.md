@@ -1,0 +1,55 @@
+# NetAdapterRdma
+
+## Parameters
+
+| Parameter   | Attribute  | DataType    | Description                                                                  | Allowed Values                                                                        |
+| ----------- | ---------- | ----------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| **Name**    | *Required* | `[String]`  | Specifies the name of network adapter for which RDMA needs to be configured. |                                                                                       |
+| **Enabled** |            | `[Boolean]` |                                                                              | Specifies if the RDMA configuration should be enabled or disabled. Defaults to $true. |  |
+
+## Description
+
+This resource is used to enable or disable RDMA on a network adapter.
+
+## Examples
+
+### Example 1
+
+This configuration disables RDMA setting on the network adapter.
+
+```powershell
+Configuration NetAdapterRdma_DisableRdmaSettings_Config
+{
+    Import-DSCResource -ModuleName NetworkingDsc
+
+    Node localhost
+    {
+        NetAdapterRdma DisableRdmaSettings
+        {
+            Name = 'SMB1_1'
+            Enabled = $false
+        }
+    }
+}
+```
+
+### Example 2
+
+This configuration enables RDMA setting on the network adapter.
+
+```powershell
+Configuration NetAdapterRdma_EnableRdmaSettings_Config
+{
+    Import-DSCResource -ModuleName NetworkingDsc
+
+    Node localhost
+    {
+        NetAdapterRdma EnableRdmaSettings
+        {
+            Name = 'SMB1_1'
+            Enabled = $true
+        }
+    }
+}
+```
+

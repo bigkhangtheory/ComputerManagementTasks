@@ -165,7 +165,7 @@ configuration ChocolateyPackageManager
 
                     Write-Verbose "EnvVar 'ChocolateyInstall': $([Environment]::GetEnvironmentVariable('ChocolateyInstall'))"
 
-                    & $chocInstallPS1 | Write-Verbose
+                    & $chocInstallPS1 | -Verbose
 
                     Write-Verbose 'Ensuring chocolatey commands are on the path.'
                     $chocoPath = [Environment]::GetEnvironmentVariable('ChocolateyInstall')
