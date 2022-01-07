@@ -5,7 +5,7 @@
 | Parameter            | Attribute  | DataType    | Description                                                           | Allowed Values |
 | -------------------- | ---------- | ----------- | --------------------------------------------------------------------- | -------------- |
 | **IsSingleInstance** | *Required* | `[String]`  | Specifies the resource is a single instance, the value must be 'Yes'. | `Yes`          |
-| **Name**             | Required   | `[String]`  | The name or GUID of the power plan to activate.                       |                |
+| **Name**             | *Required* | `[String]`  | The name or GUID of the power plan to activate.                       |                |
 | **IsActive**         | Read       | `[Boolean]` | Determines if the power plan is active.                               |                |
 
 ## Description

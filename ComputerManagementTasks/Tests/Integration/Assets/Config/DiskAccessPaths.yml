@@ -1,0 +1,11 @@
+Paths:
+  - AccessPath: C:\SQLData
+    DiskId: 5E1E50A401000000001517FFFF0AEB84
+    DiskIdType: UniqueId
+    Size: 17179869184 # 16 GB
+    FSLabel: SQLData1
+
+  - AccessPath: C:\SQLLog
+    DiskId: 5E1E50A401000000001517FFFF0AEB81
+    DiskIdType: UniqueId
+    FSLabel: SQLLog1

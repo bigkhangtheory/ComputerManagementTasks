@@ -1,4 +1,4 @@
-DisableNetBios: true
+DisableNetBios: false
 ConfigureIPv6: 32
 Interfaces:
   - IpAddress: 10.0.0.1
@@ -7,10 +7,28 @@ Interfaces:
     DnsServer:
       - 10.1.1.1
       - 10.1.1.2
-    DisableNetbios: true
+    DnsConnectionSuffix: example.com
+    RegisterDns: true
     DisableIPv6: true
-    NetworkCategory: Private
-    InterfaceMetric: 50
+    InterfaceOptions:
+      AdvertiseDefaultRoute           : Disabled
+      Advertising                     : Disabled
+      AutomaticMetric                 : Enabled
+      DirectedMacWolPattern           : Disabled
+      EcnMarking                      : AppDecide
+      ForceArpNdWolPattern            : Disabled
+      Forwarding                      : Disabled
+      IgnoreDefaultRoutes             : Disabled
+      ManagedAddressConfiguration     : Enabled
+      NeighborUnreachabilityDetection : Enabled
+      NlMtu                           : 2400
+      OtherStatefulConfiguration      : Enabled
+      RouterDiscovery                 : ControlledByDHCP
+      WeakHostReceive                 : Disabled
+      WeakHostSend                    : Disabled
+
+
+
   - InterfaceAlias: Ethernet 2
     IpAddress: 10.0.0.2
     Prefix: 8
@@ -19,18 +37,24 @@ Interfaces:
       - 10.1.1.1
       - 10.1.1.2
     DisableNetbios: true
+
+
   - InterfaceAlias: Ethernet 3
     IpAddress: 11.0.0.3
     Prefix: 8
     NetworkCategory: Public
+
+
   - InterfaceAlias: Ethernet 4
     Gateway: 10.0.0.254
     DnsServer:
       - 10.1.1.1
       - 10.1.1.2
+
   - InterfaceAlias: Wi-Fi
     EnableDhcp: true
     DisableIPv6: true
+
 Routes:
   - InterfaceAlias:    Ethernet
     DestinationPrefix: 192.168.0.0/16

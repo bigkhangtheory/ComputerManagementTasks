@@ -3,43 +3,58 @@
     param
     (
         [Parameter(Mandatory)]
-        [hashtable[]]
+        [System.Collections.Hashtable[]]
         $Images
     )
 
+    <#
+        Import required modules
+    #>
     Import-DscResource -ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName StorageDsc
 
-    foreach ($img in $Images)
+
+    <#
+        Enumerate all images
+    #>
+    foreach ($i in $Images)
     {
         # Remove Case Sensitivity of ordered Dictionary or Hashtables
-        $img = @{}+$img
+        $i = @{} + $i
 
-        $imgName = $img.ImagePath -replace ':|\s', ''
-        $executionName = "MountImage_$imgName"
 
-        if (-not $img.ContainsKey('Ensure'))
+        if (-not $i.ContainsKey('Ensure'))
         {
-            $img.Ensure = 'Present'
+            $i.Ensure = 'Present'
         }
 
-        if (-not $img.ContainsKey('Access'))
+        if (-not $i.ContainsKey('Access'))
         {
-            $img.Access = 'ReadOnly'
+            $i.Access = 'ReadOnly'
         }
 
-        (Get-DscSplattedResource -ResourceName MountImage -ExecutionName $executionName -Properties $img -NoInvoke).Invoke($img)
+        # create execution name for the resource
+        $executionName = "Drive_$("$($i.DriveLetter)_$($i.ImageName)" -replace '[-().:|\s]', '_')"
 
-        if( ($img.Ensure -eq 'Present') -and ($img.ContainsKey('DriveLetter')) )
+        # create the resource
+        $Splatting = @{
+            ResourceName  = 'MountImage'
+            ExecutionName = $executionName
+            Properties    = $i
+            NoInvoke      = $true
+        }
+        (Get-DscSplattedResource @Splatting).Invoke($i)
+
+        if ( ($i.Ensure -eq 'Present') -and ($i.ContainsKey('DriveLetter')) )
         {
             # wait for volume: 30s
-            WaitForVolume "WaitForDrive_$($img.DriveLetter)"
+            WaitForVolume "WaitForDrive_$($i.DriveLetter)"
             {
-                DriveLetter      = $img.DriveLetter
+                DriveLetter      = $i.DriveLetter
                 RetryIntervalSec = 5
                 RetryCount       = 6
                 DependsOn        = "[MountImage]$executionName"
-            }    
+            }
         }
     }
 }

@@ -10,7 +10,7 @@
 | ------------------ | ---------- | ---------- | ---------------------------------------------------------------------- | ------------------ |
 | **InterfaceAlias** | *Required* | `[String]` | Alias of the network interface for which the Weak Host Sending is set. |                    |
 | **AddressFamily**  | *Required* | `[String]` | IP address family.                                                     | IPv4,  IPv6        |
-| **State**          | Required   | `[String]` | The desired state of the Weak Host Sending.                            | Enabled,  Disabled |
+| **State**          | *Required* | `[String]` | The desired state of the Weak Host Sending.                            | Enabled,  Disabled |
 
 ## Description
 

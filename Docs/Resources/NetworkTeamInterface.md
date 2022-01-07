@@ -5,7 +5,7 @@
 | Parameter    | Attribute  | DataType   | Description                                                                                  | Allowed Values      |
 | ------------ | ---------- | ---------- | -------------------------------------------------------------------------------------------- | ------------------- |
 | **Name**     | *Required* | `[String]` | Specifies the name of the network team interface to create.                                  |                     |
-| **TeamName** | Required   | `[String]` | Specifies the name of the network team on which this particular interface should exist.      |                     |
+| **TeamName** | *Required* | `[String]` | Specifies the name of the network team on which this particular interface should exist.      |                     |
 | **VlanId**   |            | `[UInt32]` | Specifies VLAN ID to be set on network team interface.                                       |                     |
 | **Ensure**   |            | `[String]` | Specifies if the network team interface should be created or deleted. Defaults to 'Present'. | `Present`, `Absent` |
 

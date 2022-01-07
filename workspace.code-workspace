@@ -23,6 +23,8 @@
     "editor.inlineHints.fontFamily": "'CaskaydiaCove NF',Consolas, 'Courier New', monospace",
     "html.format.endWithNewline": true,
     "yaml.format.enable": false,
-    "editor.fontSize": 12
+    "editor.fontSize": 12,
+    "terminal.integrated.fontFamily": "'Cascadia Code','CaskaydiaCove NF','Cascadia Mono'",
+    "terminal.integrated.fontSize": 12
   }
 }

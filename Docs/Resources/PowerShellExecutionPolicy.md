@@ -5,7 +5,7 @@
 | Parameter                | Attribute  | DataType   | Description                                                                      | Allowed Values                                                          |
 | ------------------------ | ---------- | ---------- | -------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
 | **ExecutionPolicyScope** | *Required* | `[String]` | Defines the scope for the preference of the Windows PowerShell execution policy. | `CurrentUser`, `LocalMachine`, `MachinePolicy`, `Process`, `UserPolicy` |
-| **ExecutionPolicy**      | Required   | `[String]` | Changes the preference for the Windows PowerShell execution policy.              | `Bypass`, `Restricted`, `AllSigned`, `RemoteSigned`, `Unrestricted`     |
+| **ExecutionPolicy**      | *Required* | `[String]` | Changes the preference for the Windows PowerShell execution policy.              | `Bypass`, `Restricted`, `AllSigned`, `RemoteSigned`, `Unrestricted`     |
 
 ## Description
 

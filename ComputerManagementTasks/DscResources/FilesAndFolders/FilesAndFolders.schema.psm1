@@ -12,8 +12,12 @@ configuration FilesAndFolders
         $Items
     )
 
+    <#
+        Import required modules
+    #>
     Import-DscResource -ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName FileSystemDsc
+
 
     foreach ($item in $Items)
     {
@@ -21,6 +25,8 @@ configuration FilesAndFolders
 
         # Remove Case Sensitivity of ordered Dictionary or Hashtables
         $item = @{} + $item
+
+
 
         if (-not $item.ContainsKey('Ensure'))
         {
@@ -47,9 +53,36 @@ configuration FilesAndFolders
             $item.Remove('ContentFromFile')
         }
 
-        $executionName = "file_$($item.DestinationPath)" -replace '[\s(){}/\\:-]', '_'
-        (Get-DscSplattedResource -ResourceName File -ExecutionName $executionName -Properties $item -NoInvoke).Invoke($item)
+        # if 'Encoding' or 'NewLine' is specified, store the values and remove from hashtable
+        if ( $item.ContainsKey( 'Encoding' ))
+        {
+            [System.String]$encoding = $item.Encoding
 
+            $item.Remove( 'Encoding' )
+        }
+
+        if ( $item.ContainsKey( 'NewLine' ))
+        {
+            [System.String]$newLine = $item.NewLine
+
+            $item.Remove( 'NewLine' )
+        }
+
+
+        # format execution name for the resource
+        $executionName = "$("$($item.Type)_$($item.DestinationPath)" -replace '[\s(){}/\\:-]', '_')"
+
+        # create the File resource
+        $Splatting = @{
+            ResourceName  = 'File'
+            ExecutionName = $executionName
+            Properties    = $item
+            NoInvoke      = $true
+        }
+        (Get-DscSplattedResource @Splatting).Invoke($item)
+
+
+        # if 'Permissions' were specified, set the permissions
         if ( $null -ne $permissions )
         {
             foreach ($perm in $permissions)
@@ -69,5 +102,8 @@ configuration FilesAndFolders
                 (Get-DscSplattedResource -ResourceName FileSystemAccessRule -ExecutionName $permExecName -Properties $perm -NoInvoke).Invoke($perm)
             }
         }
+
+
+        # if the
     }
 }

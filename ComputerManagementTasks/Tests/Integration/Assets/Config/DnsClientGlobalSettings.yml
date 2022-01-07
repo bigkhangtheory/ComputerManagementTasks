@@ -1,0 +1,6 @@
+SuffixSearchList:
+  - example.com
+  - example.local
+  - internal
+UseDevolution: true
+DevolutionLevel: 0

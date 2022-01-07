@@ -5,7 +5,7 @@
 | Parameter            | Attribute  | DataType   | Description                                                           | Allowed Values |
 | -------------------- | ---------- | ---------- | --------------------------------------------------------------------- | -------------- |
 | **IsSingleInstance** | *Required* | `[String]` | Specifies the resource is a single instance, the value must be 'Yes'. | `Yes`          |
-| **RequestFile**      | Required   | `[String]` | The full path to the Offline Domain Join Request file to use.         |                |
+| **RequestFile**      | *Required* | `[String]` | The full path to the Offline Domain Join Request file to use.         |                |
 
 ## Description
 

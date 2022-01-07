@@ -5,7 +5,7 @@
 | Parameter            | Attribute  | DataType   | Description                                                           | Allowed Values |
 | -------------------- | ---------- | ---------- | --------------------------------------------------------------------- | -------------- |
 | **IsSingleInstance** | *Required* | `[String]` | Specifies the resource is a single instance, the value must be 'Yes'. | `Yes`          |
-| **TimeZone**         | Required   | `[String]` | Specifies the TimeZone.                                               |                |
+| **TimeZone**         | *Required* | `[String]` | Specifies the TimeZone.                                               |                |
 
 ## Description
 

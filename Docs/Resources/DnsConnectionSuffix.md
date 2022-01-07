@@ -5,7 +5,7 @@
 | Parameter                          | Attribute  | DataType    | Description                                                                                                | Allowed Values      |
 | ---------------------------------- | ---------- | ----------- | ---------------------------------------------------------------------------------------------------------- | ------------------- |
 | **InterfaceAlias**                 | *Required* | `[String]`  | Alias of the network interface for which the DNS server address is set.                                    |                     |
-| **ConnectionSpecificSuffix**       | Required   | `[String]`  | DNS connection-specific suffix to assign to the network interface.                                         |                     |
+| **ConnectionSpecificSuffix**       | *Required* | `[String]`  | DNS connection-specific suffix to assign to the network interface.  i                                       |                     |
 | **RegisterThisConnectionsAddress** |            | `[Boolean]` | Specifies that the IP address for this connection is to be registered.                                     |                     |
 | **UseSuffixWhenRegistering**       |            | `[Boolean]` | Specifies that this host name and the connection specific suffix for this connection are to be registered. |                     |
 | **Ensure**                         |            | `[String]`  | Ensure that the network interface connection-specific suffix is present or not.                            | `Present`, `Absent` |

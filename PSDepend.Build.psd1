@@ -67,6 +67,9 @@
     ComputerManagementDsc        = '8.4.0'
     # DSC resources for configuration of a Windows computer.
 
+    DSCR_FileContent             = '2.4.2'
+    # PowerShell DSC Resource to create TEXT / INI / JSON files.
+
     DSCR_Shortcut                = '2.2.0'
     # PowerShell DSC Resource to create shortcut file (LNK file).
 

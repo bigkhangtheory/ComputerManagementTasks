@@ -1,6 +1,6 @@
 # Bitlocker
 
-
+The **Bitlocker** allows you to configure Bitlocker on a single disk, configure a TPM chip, or automatically enable Bitlocker on multiple disks.
 
 <br />
 
@@ -8,9 +8,9 @@
 
 |                  |                                                                                                                          |
 | ---------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| **Source**       | https://github.com/bigkhangtheory/ComputerManagementTasks/tree/master/ComputerManagementTasks/DscResources/Bitlocker |
-| **Dependencies** | [xPSDesiredStateConfiguration][xPSDesiredStateConfiguration]                                 |
-| **Resources**    | [xWindowsFeature][xWindowsFeature]                                                               |
+| **Source**       | https://github.com/bigkhangtheory/ComputerManagementTasks/tree/master/ComputerManagementTasks/DscResources/Bitlocker     |
+| **Dependencies** | [xBitlocker][xBitlocker], [xPSDesiredStateConfiguration][xPSDesiredStateConfiguration]                                   |
+| **Resources**    | [xBLTpm][xBLTpm], [xBLBitlocker][xBLBitlocker], [xBLAutoBitlocker][xBLAutoBitlocker], [xWindowsFeature][xWindowsFeature] |
 
 <br />
 
@@ -20,15 +20,76 @@
 
 ### Table. Attributes of `Bitlocker`
 
-| Parameter              | Attribute  | DataType        | Description                                                                                         | Allowed Values |
-| :--------------------- | :--------- | :-------------- | :-------------------------------------------------------------------------------------------------- | :------------- |
+| Parameter     | Attribute  | DataType        | Description                                                                                                                     | Allowed Values                           |
+| :------------ | :--------- | :-------------- | :------------------------------------------------------------------------------------------------------------------------------ | :--------------------------------------- |
+| **Tpm**       | *Required* | `[Hashtable]`   | Specifies an xBLTpm DSC resource, used to initilize a TPM chip on a target node.                                                | See [xBLTpm][xBLTpm]                     |
+| **Disks**     | *Required* | `[Hashtable[]]` | Specifies a list of xBLBitlocker DSC resources to encrypt disks on target nodes.                                                | See [xBLBitlocker][xBLBitlocker]         |
+| **AutoDisks** | *Required* | `[Hashtable[]]` | Specifies a list of xBLAutoBitlocker DSC resources used to automatically enable Bitlocker on drives of type Fixed or Removable. | See [xBLAutoBitlocker][xBLAutoBitlocker] |
 
 ---
 
-#### Table. Attributes of ``
+#### Table. Attributes of `Tpm`
 
-| Parameter              | Attribute  | DataType        | Description                                                                                         | Allowed Values |
-| :--------------------- | :--------- | :-------------- | :-------------------------------------------------------------------------------------------------- | :------------- |
+| Parameter                 | Attribute | DataType | Description                                                                                                                                   | Allowed Values |
+| :------------------------ | :-------- | :------- | :-------------------------------------------------------------------------------------------------------------------------------------------- | :------------- |
+| **AllowClear**            |           | `[bool]` | Indicates that the provisioning process clears the TPM, if necessary, to move the TPM closer to complying with Windows Server 2012 standards. |                |
+| **AllowImmediateReboot**  |           | `[bool]` | Indicates that the provisioning process may send physical presence commands that require a user to be present in order to continue.           |                |
+| **AllowPhysicalPresence** |           | `[bool]` | Whether the computer can rebooted immediately after initializing the TPM.                                                                     |                |
+
+---
+
+#### Table. Attributes of `Disks`
+
+| Parameter                     | Attribute | DataType         | Description                                                                                                                                                                             | Allowed Values                                                                          |
+| :---------------------------- | :-------- | :--------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------- |
+| **MountPoint**                |           | `[string]`       | The MountPoint name as reported in `Get-BitLockerVolume`.                                                                                                                               |                                                                                         |
+| **PrimaryProtector**          |           | `[string]`       | The type of key protector that will be used as the primary key protector.                                                                                                               | `PasswordProtector`, `RecoveryPasswordProtector`, `StartupKeyProtector`, `TpmProtector` |
+| **AdAccountOrGroup**          |           | `[string]`       | Specifies an account using the format `Domain\User`.                                                                                                                                    |                                                                                         |
+| **AdAccountOrGroupProtector** |           | `[bool]`         | Indicates that BitLocker uses an AD DS account as a protector for the volume encryption key.                                                                                            |                                                                                         |
+| **AllowImmediateReboot**      |           | `[bool]`         | Whether the computer can be immediately rebooted after enabling Bitlocker on an OS drive. Defaults to `$false`.                                                                         |                                                                                         |
+| **AutoUnlock**                |           | `[bool]`         | Whether volumes should be enabled for auto unlock using `Enable-BitlockerAutoUnlock`                                                                                                    |                                                                                         |
+| **EncryptionMethod**          |           | `[string]`       | Specifies the encryption algorithm to be used on the volume                                                                                                                             | `Aes128`, `Aes256`                                                                      |
+| **HardwareEncryption**        |           | `[bool]`         | Indicates that the volume uses hardware encryption.                                                                                                                                     |                                                                                         |
+| **Password**                  |           | `[PSCredential]` | Specifies a secure string object that contains a password. Username doesn’t matter for the credential. Just put the Password in the Password field.                                     |                                                                                         |
+| **PasswordProtector**         |           | `[bool]`         | Indicates that BitLocker uses a password as a protector for the volume encryption key.                                                                                                  |                                                                                         |
+| **Pin**                       |           | `[PSCredential]` | Specifies a secure string object that contains a PIN. A `TpmProtector` must be used if Pin is used. Username doesn’t matter for the credential. Just put the Pin in the Password field. |                                                                                         |
+| **RecoveryKeyPath**           |           | `[string]`       | Specifies a path to a recovery key.                                                                                                                                                     |                                                                                         |
+| **RecoveryKeyProtector**      |           | `[bool]`         | Indicates that BitLocker uses a recovery key as a protector for the volume encryption key.                                                                                              |                                                                                         |
+| **RecoveryPasswordProtector** |           | `[bool]`         | Indicates that BitLocker uses a recovery password as a protector for the volume encryption key.                                                                                         |                                                                                         |
+| **Service**                   |           | `[bool]`         | Indicates that the system account for this computer unlocks the encrypted volume.                                                                                                       |                                                                                         |
+| **SkipHardwareTest**          |           | `[bool]`         | Indicates that BitLocker does not perform a hardware test before it begins encryption.                                                                                                  |                                                                                         |
+| **StartupKeyPath**            |           | `[string]`       | Specifies a path to a startup key.                                                                                                                                                      |                                                                                         |
+| **StartupKeyProtector**       |           | `[bool]`         | Indicates that BitLocker uses a startup key as a protector for the volume encryption key.                                                                                               |                                                                                         |
+| **TpmProtector**              |           | `[bool]`         | Indicates that BitLocker uses the TPM as a protector for the volume encryption key. If `TpmProtector` is used, it must be the `PrimaryProtector`.                                       |                                                                                         |
+| **UsedSpaceOnly**             |           | `[bool]`         | Indicates that BitLocker does not encrypt disk space which contains unused data.                                                                                                        |                                                                                         |
+
+---
+
+#### Table. Attributes of `AutoDisks`
+
+| Parameter                     | Attribute | DataType         | Description                                                                                                                                                                             | Allowed Values                                                                          |
+| :---------------------------- | :-------- | :--------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------- |
+| **DriveType**                 |           | `[string]`       | The type of volume, as reported by `Get-Volume`, to auto apply Bitlocker to                                                                                                             | `Fixed`, `Removable`                                                                    |
+| **MinDiskCapacityGB**         |           | `[Int32]`        | If specified, only disks this size or greater will auto apply Bitlocker.                                                                                                                |                                                                                         |
+| **PrimaryProtector**          |           | `[string]`       | The type of key protector that will be used as the primary key protector.                                                                                                               | `PasswordProtector`, `RecoveryPasswordProtector`, `StartupKeyProtector`, `TpmProtector` |
+| **AdAccountOrGroup**          |           | `[string]`       | Specifies an account using the format `Domain\User`.                                                                                                                                    |                                                                                         |
+| **AdAccountOrGroupProtector** |           | `[bool]`         | Indicates that BitLocker uses an AD DS account as a protector for the volume encryption key.                                                                                            |                                                                                         |
+| **AllowImmediateReboot**      |           | `[bool]`         | Whether the computer can be immediately rebooted after enabling Bitlocker on an OS drive. Defaults to `$false`.                                                                         |                                                                                         |
+| **AutoUnlock**                |           | `[bool]`         | Whether volumes should be enabled for auto unlock using `Enable-BitlockerAutoUnlock`                                                                                                    |                                                                                         |
+| **EncryptionMethod**          |           | `[string]`       | Specifies the encryption algorithm to be used on the volume                                                                                                                             | `Aes128`, `Aes256`                                                                      |
+| **HardwareEncryption**        |           | `[bool]`         | Indicates that the volume uses hardware encryption.                                                                                                                                     |                                                                                         |
+| **Password**                  |           | `[PSCredential]` | Specifies a secure string object that contains a password. Username doesn’t matter for the credential. Just put the Password in the Password field.                                     |                                                                                         |
+| **PasswordProtector**         |           | `[bool]`         | Indicates that BitLocker uses a password as a protector for the volume encryption key.                                                                                                  |                                                                                         |
+| **Pin**                       |           | `[PSCredential]` | Specifies a secure string object that contains a PIN. A `TpmProtector` must be used if Pin is used. Username doesn’t matter for the credential. Just put the Pin in the Password field. |                                                                                         |
+| **RecoveryKeyPath**           |           | `[string]`       | Specifies a path to a recovery key.                                                                                                                                                     |                                                                                         |
+| **RecoveryKeyProtector**      |           | `[bool]`         | Indicates that BitLocker uses a recovery key as a protector for the volume encryption key.                                                                                              |                                                                                         |
+| **RecoveryPasswordProtector** |           | `[bool]`         | Indicates that BitLocker uses a recovery password as a protector for the volume encryption key.                                                                                         |                                                                                         |
+| **Service**                   |           | `[bool]`         | Indicates that the system account for this computer unlocks the encrypted volume.                                                                                                       |                                                                                         |
+| **SkipHardwareTest**          |           | `[bool]`         | Indicates that BitLocker does not perform a hardware test before it begins encryption.                                                                                                  |                                                                                         |
+| **StartupKeyPath**            |           | `[string]`       | Specifies a path to a startup key.                                                                                                                                                      |                                                                                         |
+| **StartupKeyProtector**       |           | `[bool]`         | Indicates that BitLocker uses a startup key as a protector for the volume encryption key.                                                                                               |                                                                                         |
+| **TpmProtector**              |           | `[bool]`         | Indicates that BitLocker uses the TPM as a protector for the volume encryption key. If `TpmProtector` is used, it must be the `PrimaryProtector`.                                       |                                                                                         |
+| **UsedSpaceOnly**             |           | `[bool]`         | Indicates that BitLocker does not encrypt disk space which contains unused data.                                                                                                        |                                                                                         |
 
 ---
 
@@ -42,6 +103,7 @@ Bitlocker:
     AllowClear: False
     AllowPhysicalPresence: True
     AllowImmediateReboot: True
+
  Disks:
    # System Drive at first
    - MountPoint:                'C:'
@@ -56,6 +118,7 @@ Bitlocker:
      RecoveryPasswordProtector: True
      AllowImmediateReboot:      True
      UsedSpaceOnly:             True
+     
  AutoDisks:
    - DriveType:                 Fixed
      PrimaryProtector:          TpmProtector
@@ -80,6 +143,16 @@ lookup_options:
 
   Bitlocker:
     merge_hash: deep
+  Bitlocker\Disks:
+    merge_hash_array: UniqueKeyValTuples
+    merge_options:
+      tuple_keys:
+        - MountPoint
+  Bitlocker\AutoDisks:
+    merge_hash_array: UniqueKeyValTuples
+    merge_options:
+      tuple_keys:
+        - DriveType
 
 ```
 
@@ -121,3 +194,8 @@ lookup_options:
 [WindowsCapability]: https://github.com/dsccommunity/ComputerManagementDsc/wiki/WindowsCapability
 [WindowsEventLog]: https://github.com/dsccommunity/ComputerManagementDsc/wiki/WindowsEventLog
 [xWindowsFeature]: https://github.com/dsccommunity/xPSDesiredStateConfiguration
+
+[xBitlocker]: https://github.com/dsccommunity/xBitlocker
+[xBLTpm]: https://github.com/dsccommunity/xBitlocker
+[xBLBitlocker]: https://github.com/dsccommunity/xBitlocker
+[xBLAutoBitlocker]: https://github.com/dsccommunity/xBitlocker

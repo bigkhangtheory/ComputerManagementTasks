@@ -5,7 +5,7 @@
 | Parameter           | Attribute  | DataType    | Description                                                                                                             | Allowed Values            |
 | ------------------- | ---------- | ----------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------- |
 | **Role**            | *Required* | `[String]`  | Specifies the role for which the IE Enhanced Security Configuration should be changed.                                  | `Administrators`, `Users` |
-| **Enabled**         | Required   | `[Boolean]` | Specifies if IE Enhanced Security Configuration should be enabled or disabled.                                          |                           |
+| **Enabled**         | *Required* | `[Boolean]` | Specifies if IE Enhanced Security Configuration should be enabled or disabled.                                          |                           |
 | **SuppressRestart** |            | `[Boolean]` | Specifies if a restart of the node should be suppressed. By default the node will be restarted if the value is changed. |                           |
 
 ## Description

@@ -5,7 +5,7 @@
 | Parameter            | Attribute  | DataType   | Description                                                          | Allowed Values |
 | -------------------- | ---------- | ---------- | -------------------------------------------------------------------- | -------------- |
 | **IsSingleInstance** | *Required* | `[String]` | Specifies the resource is a single instance, the value must be 'Yes' | `Yes`          |
-| **SystemLocale**     | Required   | `[String]` | Specifies the System Locale.                                         |                |
+| **SystemLocale**     | *Required* | `[String]` | Specifies the System Locale.                                         |                |
 
 ## Description
 

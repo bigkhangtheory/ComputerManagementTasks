@@ -5,7 +5,7 @@
 | Parameter   | Attribute  | DataType    | Description                            | Allowed Values                                       |
 | ----------- | ---------- | ----------- | -------------------------------------- | ---------------------------------------------------- |
 | **Name**    | *Required* | `[String]`  | Specifies the Name of network adapter. |                                                      |
-| **Enabled** | Required   | `[Boolean]` |                                        | Specifies whether RSS should be enabled or disabled. |  |
+| **Enabled** | *Required* | `[Boolean]` |                                        | Specifies whether RSS should be enabled or disabled. |  |
 
 ## Description
 

@@ -1,16 +1,16 @@
 # LocalGroups
 
-
+The **LocalGroups** DSC Configuration provides a mechanism to manage local groups on the target node.
 
 <br />
 
 ## Project Information
 
-|                  |                                                                                                                          |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------ |
+|                  |                                                                                                                        |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | **Source**       | https://github.com/bigkhangtheory/ComputerManagementTasks/tree/master/ComputerManagementTasks/DscResources/LocalGroups |
-| **Dependencies** | [xPSDesiredStateConfiguration][xPSDesiredStateConfiguration]                                 |
-| **Resources**    | [xWindowsFeature][xWindowsFeature]                                                               |
+| **Dependencies** | [xPSDesiredStateConfiguration][xPSDesiredStateConfiguration]                                                           |
+| **Resources**    | [xGroup][xGroup]                                                                                                       |
 
 <br />
 
@@ -20,15 +20,22 @@
 
 ### Table. Attributes of `LocalGroups`
 
-| Parameter              | Attribute  | DataType        | Description                                                                                         | Allowed Values |
-| :--------------------- | :--------- | :-------------- | :-------------------------------------------------------------------------------------------------- | :------------- |
+| Parameter  | Attribute | DataType        | Description           | Allowed Values |
+| :--------- | :-------- | :-------------- | :-------------------- | :------------- |
+| **Groups** |           | `[Hashtable[]]` | List of local groups. |                |
 
 ---
 
-#### Table. Attributes of ``
+#### Table. Attributes of `Groups`
 
-| Parameter              | Attribute  | DataType        | Description                                                                                         | Allowed Values |
-| :--------------------- | :--------- | :-------------- | :-------------------------------------------------------------------------------------------------- | :------------- |
+| Parameter            | Attribute  | DataType     | Description                                                        | Allowed Values      |
+| :------------------- | :--------- | :----------- | :----------------------------------------------------------------- | :------------------ |
+| **GroupName**        | *Required* | `[String]`   | The name of the group to create, modify, or remove.                |
+| **Ensure**           |            | `[String]`   | Indicates if the group should exist or not. Defaults to `Present`. | `Absent`, `Present` |
+| **Description**      |            | `[String]`   | The description the group should have.                             |
+| **Members**          |            | `[String[]]` | The members the group should have.                                 |                     |
+| **MembersToInclude** |            | `[String]`[] | The members the group should include.                              |                     |
+| **MembersToExclude** |            | `[String[]]` | The members the group should exclude.                              |                     |
 
 ---
 
@@ -41,8 +48,16 @@ LocalGroups:
   Groups:
     - GroupName: Administrators
       MembersToInclude:
-      - CONTOSO\Exchange Trusted Subsystem
+        - Administrator
+        - EXAMPLE\Help Desk
 
+    - GroupName:   App_123_Read
+      Description: App Reader
+      MembersToInclude:
+        - User01
+        - User02
+      MembersToExclude:
+        - Administrator
 ```
 
 <br />
@@ -54,6 +69,12 @@ lookup_options:
 
   LocalGroups:
     merge_hash: deep
+  LocalGroups\Groups:
+    merge_baseType_array: Unique
+    merge_hash_array: DeepTuple
+    merge_options:
+      tuple_keys:
+        - GroupName
 
 ```
 
@@ -63,6 +84,8 @@ lookup_options:
 [Chocolatey]: https://github.com/gaelcolas/Chocolatey
 [ComputerManagementDsc]: https://github.com/dsccommunity/ComputerManagementDsc
 [xPSDesiredStateConfiguration]: https://github.com/dsccommunity/xPSDesiredStateConfiguration
+
+[xGroup]: https://github.com/dsccommunity/xPSDesiredStateConfiguration
 
 [AccessControlResourceHelper]: https://github.com/mcollera/AccessControlDsc
 [ActiveDirectoryAccessEntry]: https://github.com/mcollera/AccessControlDsc

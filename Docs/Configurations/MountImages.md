@@ -1,16 +1,16 @@
 # MountImages
 
-
+The **MountImages** DSC configuration is used to mount or unmount an ISO/VHD disk image. It can be mounted as read-only (ISO, VHD, VHDx) or read/write (VHD, VHDx).
 
 <br />
 
 ## Project Information
 
-|                  |                                                                                                                          |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------ |
+|                  |                                                                                                                        |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | **Source**       | https://github.com/bigkhangtheory/ComputerManagementTasks/tree/master/ComputerManagementTasks/DscResources/MountImages |
-| **Dependencies** | [xPSDesiredStateConfiguration][xPSDesiredStateConfiguration]                                 |
-| **Resources**    | [xWindowsFeature][xWindowsFeature]                                                               |
+| **Dependencies** | [StorageDsc][StorageDsc], [xPSDesiredStateConfiguration][xPSDesiredStateConfiguration]                                 |
+| **Resources**    | [MountImage][MountImage], [xWindowsFeature][xWindowsFeature]                                                           |
 
 <br />
 
@@ -20,15 +20,21 @@
 
 ### Table. Attributes of `MountImages`
 
-| Parameter              | Attribute  | DataType        | Description                                                                                         | Allowed Values |
-| :--------------------- | :--------- | :-------------- | :-------------------------------------------------------------------------------------------------- | :------------- |
+| Parameter  | Attribute | DataType        | Description                                   | Allowed Values |
+| :--------- | :-------- | :-------------- | :-------------------------------------------- | :------------- |
+| **Images** |           | `[Hashtable[]]` | A list of [MountImage][MountImage] resources. |                |
 
 ---
 
-#### Table. Attributes of ``
+#### Table. Attributes of `Images`
 
-| Parameter              | Attribute  | DataType        | Description                                                                                         | Allowed Values |
-| :--------------------- | :--------- | :-------------- | :-------------------------------------------------------------------------------------------------- | :------------- |
+| Parameter       | Attribute  | DataType   | Description                                                                                                                                              | Allowed Values                 |
+| :-------------- | :--------- | :--------- | :------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------- |
+| **ImagePath**   | *Required* | `[String]` | Specifies the path of the VHD or ISO file.                                                                                                               |                                |
+| **DriveLetter** |            | `[String]` | Specifies the drive letter to mount this VHD or ISO to.                                                                                                  |                                |
+| **StorageType** |            | `[String]` | Specifies the storage type of a file. If the StorageType parameter is not specified, then the storage type is determined by file extension.              | `ISO`, `VHD`, `VHDx`, `VHDSet` |
+| **Access**      |            | `[String]` | Allows a VHD file to be mounted in read-only or read-write mode. ISO files are mounted in read-only mode regardless of what parameter value you provide. | `ReadOnly`, `ReadWrite`        |
+| **Ensure**      |            | `[String]` | Determines whether the VHD or ISO should be mounted or not.                                                                                              | `Present`, `Absent`            |
 
 ---
 
@@ -44,10 +50,12 @@ MountImages:
       StorageType: ISO
       Access: ReadOnly
       Ensure: Present
+
     - ImagePath: C:\ISO\Test.vhd
       DriveLetter: G
       StorageType: VHDx
       Access: ReadWrite
+
     - ImagePath: C:\ISO\Test2.iso
 
 ```
@@ -61,6 +69,11 @@ lookup_options:
 
   MountImages:
     merge_hash: deep
+  MountImages\Images:
+    merge_hash_array: UniqueKeyValTuples
+    merge_options:
+      tuple_keys:
+        - ImagePath
 
 ```
 
@@ -102,3 +115,11 @@ lookup_options:
 [WindowsCapability]: https://github.com/dsccommunity/ComputerManagementDsc/wiki/WindowsCapability
 [WindowsEventLog]: https://github.com/dsccommunity/ComputerManagementDsc/wiki/WindowsEventLog
 [xWindowsFeature]: https://github.com/dsccommunity/xPSDesiredStateConfiguration
+
+[StorageDsc]: https://github.com/dsccommunity/StorageDsc
+[Disk]: https://github.com/dsccommunity/StorageDsc/wiki/Disk
+[DiskAccessPath]: https://github.com/dsccommunity/StorageDsc/wiki/DiskAccessPath
+[MountImage]: https://github.com/dsccommunity/StorageDsc/wiki/MountImage
+[OpticalDiskDriveLetter]: https://github.com/dsccommunity/StorageDsc/wiki/OpticalDiskDriveLetter
+[WaitForDisk]: https://github.com/dsccommunity/StorageDsc/wiki/WaitForDisk
+[WaitForVolume]: https://github.com/dsccommunity/StorageDsc/wiki/WaitForVolume

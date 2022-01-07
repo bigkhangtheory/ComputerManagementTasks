@@ -1,7 +1,10 @@
 Variables:
+  # loop
   - Name: var1
     Target: Machine
     Value: 123
+    Ensure: Present
+
   - Name: var2
     Target: Machine
     Value: 456

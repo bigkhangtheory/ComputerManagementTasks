@@ -6,7 +6,7 @@
 | ---------------------- | ---------- | ---------- | --------------------------------------------------------------------------- | -------------- |
 | **NetworkAdapterName** | *Required* | `[String]` | Specifies the name of the network adapter to set the advanced property for. |                |
 | **RegistryKeyword**    | *Required* | `[String]` | Specifies the registry keyword that should be in desired state.             |                |
-| **RegistryValue**      | Required   | `[String]` | Specifies the value of the registry keyword.                                |                |
+| **RegistryValue**      | *Required* | `[String]` | Specifies the value of the registry keyword.                                |                |
 | **DisplayValue**       | Read       | `[String]` | Output Display value of selected RegistryKeyword.                           |                |
 
 ## Description

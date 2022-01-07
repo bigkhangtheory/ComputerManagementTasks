@@ -6,7 +6,7 @@
 | ------------ | ---------- | ----------- | -------------------------------------------- | ---------------------------------------------------- |
 | **Name**     | *Required* | `[String]`  | Specifies the name of network adapter.       |                                                      |
 | **Protocol** | *Required* | `[String]`  | Specifies which protocol to make changes to. | `V1IPv4`, `IPv4`, `IPv6`                             |
-| **State**    | Required   | `[Boolean]` |                                              | Specifies whether LSO should be enabled or disabled. |  |
+| **State**    | *Required* | `[Boolean]` |                                              | Specifies whether LSO should be enabled or disabled. |  |
 
 ## Description
 

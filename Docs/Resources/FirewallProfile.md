@@ -20,7 +20,7 @@
 | **LogBlocked**                      |            | `[String]`   | Specifies how to log the dropped packets in the location specified by the LogFileName parameter.                         | `True`, `False`, `NotConfigured`  |
 | **LogFileName**                     |            | `[String]`   | Specifies the path and filename of the file to which Windows Server writes log entries.                                  |                                   |
 | **LogIgnored**                      |            | `[String]`   | Specifies how to log the ignored packets in the location specified by the LogFileName parameter.                         | `True`, `False`, `NotConfigured`  |
-| **LogMaxSizeKilobytes**             |            | UInt64       | Specifies the maximum file size of the log, in kilobytes. The acceptable values for this parameter are: 1 through 32767. |                                   |
+| **LogMaxSizeKilobytes**             |            | `[UInt64]`   | Specifies the maximum file size of the log, in kilobytes. The acceptable values for this parameter are: 1 through 32767. |                                   |
 | **NotifyOnListen**                  |            | `[String]`   | Allows the notification of listening for inbound connections by a service.                                               | `True`, `False`, `NotConfigured`  |
 
 ## Description

@@ -5,7 +5,7 @@
 | Parameter | Attribute  | DataType   | Description                                        | Allowed Values        |
 | --------- | ---------- | ---------- | -------------------------------------------------- | --------------------- |
 | **Name**  | *Required* | `[String]` | Specifies the name of network adapter.             |                       |
-| **State** | Required   | `[String]` | Specifies the desired state of the network adapter | `Enabled`, `Disabled` |
+| **State** | *Required* | `[String]` | Specifies the desired state of the network adapter | `Enabled`, `Disabled` |
 
 ## Description
 

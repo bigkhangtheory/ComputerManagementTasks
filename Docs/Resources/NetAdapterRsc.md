@@ -5,8 +5,8 @@
 | Parameter     | Attribute  | DataType    | Description                                  | Allowed Values                                       |
 | ------------- | ---------- | ----------- | -------------------------------------------- | ---------------------------------------------------- |
 | **Name**      | *Required* | `[String]`  | Specifies the Name of network adapter.       |                                                      |
-| **Protocol**  | Required   | `[String]`  | Specifies which protocol to make changes to. | `IPv4`, `IPv6`, `All`                                |
-| **State**     | Required   | `[Boolean]` |                                              | Specifies whether RSC should be enabled or disabled. |  |
+| **Protocol**  | *Required* | `[String]`  | Specifies which protocol to make changes to. | `IPv4`, `IPv6`, `All`                                |
+| **State**     | *Required* | `[Boolean]` |                                              | Specifies whether RSC should be enabled or disabled. |  |
 | **StateIPv4** | Read       | `[String]`  | Returns the current state of RSC for IPv4    |                                                      |
 | **StateIPv6** | Read       | `[String]`  | Returns the current state of RSC for IPv6    |                                                      |
 

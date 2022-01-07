@@ -6,171 +6,391 @@
 #Requires -Module NetworkingDsc
 
 
-configuration NetworkIpConfiguration {
-    param (
-        [parameter()]
-        [boolean]
+configuration NetworkIpConfiguration
+{
+    param
+    (
+        [Parameter()]
+        [System.Boolean]
         $DisableNetBios = $false,
-        
-        [parameter()]
-        [int16]
+
+        [Parameter()]
+        [System.Int16]
         $ConfigureIPv6 = -1, # < 0 -> no configuration code will be generated
- 
-        [parameter()]
-        [hashtable[]]
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.Collections.Hashtable[]]
         $Interfaces,
 
-        [parameter()]
-        [hashtable[]]
+        [Parameter()]
+        [System.Collections.Hashtable[]]
         $Routes
     )
-    
+
     Import-DscResource -ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName xPSDesiredStateConfiguration
     Import-DscResource -ModuleName NetworkingDsc
 
     function NetIpInterfaceConfig
     {
-        param(
-            [string]   $InterfaceAlias,
-            [string]   $IpAddress,
-            [int]      $Prefix,
-            [string]   $Gateway,
-            [string[]] $DnsServer,
-            [uint32]   $InterfaceMetric,
-            [boolean]  $DisableNetbios,
-            [boolean]  $EnableDhcp,
-            [boolean]  $EnableLmhostsLookup,
-            [boolean]  $DisableIPv6,
+        param
+        (
+            [Parameter()]
+            [System.String]
+            $InterfaceAlias = 'Ethernet',
+
+            [Parameter()]
+            [ValidateSet('IPv4', 'IPv6')]
+            [System.String]
+            $AddressFamily = 'IPv4',
+
+            [Parameter()]
+            [System.String]
+            $IpAddress,
+
+            [Parameter()]
+            [System.UInt32]
+            $Prefix = 24,
+
+            [Parameter()]
+            [System.String]
+            $Gateway,
+
+            [Parameter()]
+            [System.String[]]
+            $DnsServer,
+
+            [Parameter()]
+            [System.String]
+            $DnsConnectionSuffix,
+
+            [Parameter()]
+            [System.Boolean]
+            $RegisterDns = $true,
+
+            [Parameter()]
+            [System.Boolean]
+            $DisableNetbios = $false,
+
+            [Parameter()]
+            [System.Boolean]
+            $EnableDhcp = $false,
+
+            [Parameter()]
+            [System.Boolean]
+            $EnableLmhostsLookup = $false,
+
+            [Parameter()]
+            [System.Boolean]
+            $DisableIPv6 = $false,
+
+            [Parameter()]
             [ValidateSet('Public', 'Private', 'DomainAuthenticated')]
-            [string]   $NetworkCategory
+            [System.String]
+            $NetworkCategory = 'DomainAuthenticated',
+
+            [Parameter()]
+            [ValidateSet('Enabled', 'Disabled')]
+            [System.String]
+            $AdvertiseDefaultRoute = 'Disabled',
+
+            [Parameter()]
+            [ValidateSet('Enabled', 'Disabled')]
+            [System.String]
+            $Advertising = 'Disabled',
+
+            [Parameter()]
+            [ValidateSet('Enabled', 'Disabled')]
+            [System.String]
+            $AutomaticMetric = 'Enabled',
+
+            [Parameter()]
+            [ValidateSet('Enabled', 'Disabled')]
+            [System.String]
+            $DirectedMacWolPattern = 'Disabled',
+
+            [Parameter()]
+            [ValidateSet('Disabled', 'UseEct1', 'UseEct0', 'AppDecide')]
+            [System.String]
+            $EcnMarking = 'AppDecide',
+
+            [Parameter()]
+            [ValidateSet('Enabled', 'Disabled')]
+            [System.String]
+            $ForceArpNdWolPattern = 'Disabled',
+
+            [Parameter()]
+            [ValidateSet('Enabled', 'Disabled')]
+            [System.String]
+            $Forwarding = 'Disabled',
+
+            [Parameter()]
+            [ValidateSet('Enabled', 'Disabled')]
+            [System.String]
+            $IgnoreDefaultRoutes = 'Disabled',
+
+            [Parameter()]
+            [ValidateSet('Enabled', 'Disabled')]
+            [System.String]
+            $ManagedAddressConfiguration = 'Enabled',
+
+            [Parameter()]
+            [ValidateSet('Enabled', 'Disabled')]
+            [System.String]
+            $NeighborUnreachabilityDetection = 'Enabled',
+
+            [Parameter()]
+            [ValidateSet('Enabled', 'Disabled')]
+            [System.String]
+            $OtherStatefulConfiguration = 'Enabled',
+
+            [Parameter()]
+            [ValidateSet('Enabled', 'Disabled', 'ControlledByDHCP')]
+            [System.String]
+            $RouterDiscovery = 'ControlledByDHCP',
+
+            [Parameter()]
+            [ValidateSet('Enabled', 'Disabled')]
+            [System.String]
+            $WeakHostReceive = 'Disabled',
+
+            [Parameter()]
+            [ValidateSet('Enabled', 'Disabled')]
+            [System.String]
+            $WeakHostSend = 'Disabled',
+
+            [Parameter()]
+            [System.UInt32]
+            $NlMtu = 1500,
+
+            [Parameter()]
+            [System.UInt32]
+            $InterfaceMetric
         )
 
+        # initialize array of valid parameters for the resource 'NetIpInterface'
+        $paramsNetIpInterface = @(
+            'AddressFamily',
+            'InterfaceAlias',
+            'AdvertiseDefaultRoute',
+            'Advertising',
+            'AutomaticMetric',
+            'DirectedMacWolPattern',
+            'EcnMarking',
+            'ForceArpNdWolPattern',
+            'Forwarding',
+            'IgnoreDefaultRoutes',
+            'InterfaceMetric',
+            'ManagedAddressConfiguration',
+            'NeighborUnreachabilityDetection',
+            'NlMtu',
+            'OtherStatefulConfiguration',
+            'RouterDiscovery',
+            'WeakHostReceive',
+            'WeakHostSend'
+        )
+
+
+        # initialize hashtable to store matching properties for NetIpInterface
+        $params = @{ }
+
+        # enumerate all parameters for matching properties of NetIpInterface
+        foreach ($item in ($PSBoundParameters.GetEnumerator() | Where-Object Key -In $paramsNetIpInterface))
+        {
+            $params.Add($item.Key, $item.Value)
+        }
+
+        # create execution name for the interface alias
+        $interfaceAliasName = "Interface_$("$($InterfaceAlias)" -replace '[-().:\s]', '_')"
+
+        <#
+            .PARAMETER EnableDhcp
+        #>
         if ( $EnableDhcp -eq $true )
         {
+            # if 'EnableDhcp' is true, then 'IPAddress', 'Gateway', and 'DnsServer' must be empty
             if ( -not [string]::IsNullOrWhiteSpace($IpAddress) -or
-                -not [string]::IsNullOrWhiteSpace($Gateway) -or 
+                -not [string]::IsNullOrWhiteSpace($Gateway) -or
                 ($null -ne $DnsServer -and $DnsServer.Count -gt 0))
             {
                 throw "ERROR: Enabled DHCP requires empty 'IpAddress' ($IpAddress), 'Gateway' ($Gateway) and 'DnsServer' ($DnsServer) parameters for interface '$InterfaceAlias'."
             }
 
-            NetIPInterface "EnableDhcp_$InterfaceAlias"
+            # set the property 'Dhcp' for NetIpInterface
+            $params.Dhcp = 'Enabled'
+
+            # create execution name for the resource
+            $executionName = "Dhcp_$($params.Dhcp)_$($interfaceAliasName)"
+
+            # create resource for NetIpInterface with DHCP enabled
+            $Splatting = @{
+                ResourceName  = 'NetIPInterface'
+                ExecutionName = $executionName
+                Properties    = $params
+                NoInvoke      = $true
+            }
+            (Get-DscSplattedResource @Splatting).Invoke($params)
+
+            # set the resource dependency for NetIPInterface
+            $dependsOnNetIpInterface = "[NetIPInterface]$executionName"
+
+
+            # enabling DHCP for DNS servers
+            DnsServerAddress "$executionName"
             {
-                InterfaceAlias = $InterfaceAlias
-                AddressFamily  = 'IPv4'
-                Dhcp           = 'Enabled'
+                InterfaceAlias = $params.InterfaceAlias
+                AddressFamily  = $params.AddressFamily
+                Validate       = $false
+                DependsOn      = $dependsOnNetIpInterface
             }
 
-            DnsServerAddress "EnableDhcpDNS_$InterfaceAlias"
-            {
-                InterfaceAlias = $InterfaceAlias
-                AddressFamily  = 'IPv4'
-            }
         }
-        else 
+        else
         {
-            if ( -not [string]::IsNullOrWhiteSpace($IpAddress) )
+            <#
+                .PARAMETER IpAddress
+            #>
+            # if EnableDhcp is false, then 'IPAddress' must be specified
+            if ( -not [System.String]::IsNullOrWhiteSpace($IpAddress) )
             {
-                # disable DHCP if IP-Address is specified
-                NetIPInterface "DisableDhcp_$InterfaceAlias"
-                {
-                    InterfaceAlias = $InterfaceAlias
-                    AddressFamily  = 'IPv4'
-                    Dhcp           = 'Disabled'
-                }
 
+                # set the property 'Dhcp' for NetIpInterface
+                $params.Dhcp = 'Disabled'
+
+                # create execution name for the resource
+                $executionName = "Dhcp_$($params.Dhcp)_$($interfaceAliasName)"
+
+                # create resource for NetIpInterface with DHCP enabled
+                $Splatting = @{
+                    ResourceName  = 'NetIPInterface'
+                    ExecutionName = $executionName
+                    Properties    = $params
+                    NoInvoke      = $true
+                }
+                (Get-DscSplattedResource @Splatting).Invoke($params)
+
+                # set the resource dependency for NetIPInterface
+                $dependsOnNetIpInterface = "[NetIPInterface]$executionName"
+
+                # validate the Prefix
                 if ( -not ($Prefix -match '^\d+$') )
                 {
+                    Write-Host "ERROR: Valid 'Prefix' parameter is required for IP address '$IpAddress'." -ForegroundColor Yellow
                     throw "ERROR: Valid 'Prefix' parameter is required for IP address '$IpAddress'."
                 }
 
-                $ip = "$($IpAddress)/$($Prefix)"
+                # format the ip
+                $ipAddr = '{0}/{1}' -f $IpAddress, $Prefix
 
-                IPAddress "NetworkIp_$InterfaceAlias" 
+                IPAddress "IPAddress_$interfaceAliasName"
                 {
-                    IPAddress      = $ip
-                    AddressFamily  = 'IPv4'
-                    InterfaceAlias = $InterfaceAlias
+                    IPAddress      = $ipAddr
+                    AddressFamily  = $params.AddressFamily
+                    InterfaceAlias = $params.InterfaceAlias
+                    DependsOn      = $dependsOnNetIpInterface
                 }
+
             }
 
+            <#
+                .PARAMETER Gateway
+            #>
+            # if specified, set the default gateway
             if ( -not [string]::IsNullOrWhiteSpace($Gateway) )
             {
-                DefaultGatewayAddress "DefaultGateway_$InterfaceAlias"
+
+                DefaultGatewayAddress "DefaultGateway_$interfaceAliasName"
                 {
-                    AddressFamily  = 'IPv4'
-                    InterfaceAlias = $InterfaceAlias
+                    AddressFamily  = $($params.AddressFamily)
+                    InterfaceAlias = $($params.InterfaceAlias)
                     Address        = $Gateway
+                    DependsOn      = $dependsOnNetIpInterface
                 }
+
             }
 
+            <#
+                .PARAMETER DnsServer
+            #>
+            # if specified, set the DNS server addresses
             if ( $null -ne $DnsServer -and $DnsServer.Count -gt 0 )
             {
-                DnsServerAddress "DnsServers_$InterfaceAlias"
+                DnsServerAddress "DnsServers_$interfaceAliasName"
                 {
-                    InterfaceAlias = $InterfaceAlias
-                    AddressFamily  = 'IPv4'
+                    InterfaceAlias = $($params.InterfaceAlias)
+                    AddressFamily  = $($params.AddressFamily)
                     Address        = $DnsServer
+                    Validate       = $false
+                    DependsOn      = $dependsOnNetIpInterface
                 }
-            }
-        }
+                $dependsOnDnsServerAddress = "[DnsServerAddress]DnsServers_$interfaceAliasName"
 
-        if ( $null -ne $InterfaceMetric -and $InterfaceMetric -gt 0 )
-        {
-            Script "InterfaceMetric_$InterfaceAlias"
-            {
-                TestScript = 
+
+                <#
+                    .PARAMETER DnsConnectionSuffix
+                #>
+                if ($null -ne $DnsConnectionSuffix)
                 {
-                    $netIf = Get-NetIPInterface -InterfaceAlias $using:InterfaceAlias -ErrorAction SilentlyContinue                    
-                    if ( $null -eq $netIf )
+                    $executionName = "DnsConnectionSuffix_$interfaceAliasName"
+
+                    DnsConnectionSuffix "$executionName"
                     {
-                        Write-Verbose "NetIpInterface '$using:InterfaceAlias' not found."
-                        return $false
+                        InterfaceAlias                 = $($params.InterfaceAlias)
+                        ConnectionSpecificSuffix       = $DnsConnectionSuffix
+                        RegisterThisConnectionsAddress = $RegisterDns
+                        Ensure                         = 'Present'
+                        DependsOn                      = $dependsOnDnsServerAddress
                     }
-
-                    [boolean]$result = $true
-                    $netIf | ForEach-Object { Write-Verbose "InterfaceMetric $($_.AddressFamily): $($_.InterfaceMetric)"; 
-                        if ( $_.InterfaceMetric -ne $using:InterfaceMetric ) { $result = $false }; }
-
-                    Write-Verbose "Expected Interface Metric: $using:InterfaceMetric"
-                    return $result
                 }
-                SetScript  = 
-                {
-                    $netIf = Get-NetIPInterface -InterfaceAlias $using:InterfaceAlias                
-
-                    $netIf | ForEach-Object { Write-Verbose "Set $($_.AddressFamily) InterfaceMetric to $using:InterfaceMetric"; 
-                        $_ | Set-NetIPInterface -InterfaceMetric $using:InterfaceMetric }
-                }
-                GetScript  = { return @{result = 'N/A' } }
             }
         }
 
-        WinsSetting "LmhostsLookup_$InterfaceAlias"
+        <#
+            .PARAMETER EnableLmhostsLookup
+        #>
+        WinsSetting "LmhostsLookup_$interfaceAliasName"
         {
             EnableLmHosts    = $EnableLmhostsLookup
             IsSingleInstance = 'Yes'
         }
 
+        <#
+            .PARAMETER DisableNetbios
+        #>
         if ($DisableNetbios)
         {
-            NetBios "DisableNetBios_$InterfaceAlias"
+            NetBios "DisableNetBios_$interfaceAliasName"
             {
                 InterfaceAlias = $InterfaceAlias
                 Setting        = 'Disable'
             }
         }
 
-        if ($DisableIPv6)
+        <#
+            .PARAMETER DisableIPv6
+        #>
+        if ($PSBoundParameters.ContainsKey('DisableIPv6'))
         {
-            NetAdapterBinding "DisableIPv6_$InterfaceAlias"
+            if ($DisableIPv6)
+            {
+                $ipv6State = 'Disabled'
+            }
+            else
+            {
+                $ipv6State = 'Enabled'
+            }
+
+            # create resource for IPv6 binding
+            NetAdapterBinding "DisableIPv6_$interfaceAliasName"
             {
                 InterfaceAlias = $InterfaceAlias
                 ComponentId    = 'ms_tcpip6'
-                State          = 'Disabled'
+                State          = $ipv6State
             }
         }
+
+
 
         if ( -not [string]::IsNullOrWhiteSpace($NetworkCategory) )
         {
@@ -179,13 +399,13 @@ configuration NetworkIpConfiguration {
                 throw "ERROR: Invalid value of attribute 'NetworkCategory'."
             }
 
-            Script "NetworkCategory_$InterfaceAlias"
+            Script "NetworkCategory_$interfaceAliasName"
             {
                 TestScript = {
                     $val = Get-NetConnectionProfile -InterfaceAlias $using:InterfaceAlias
-    
+
                     Write-Verbose "Current NetworkCategory of interface '$using:InterfaceAlias': $($val.NetworkCategory)"
-    
+
                     if ($null -ne $val -and $val.NetworkCategory -eq $using:NetworkCategory )
                     {
                         return $true
@@ -205,25 +425,30 @@ configuration NetworkIpConfiguration {
                         Start-Sleep 5
 
                         $val = Get-NetConnectionProfile -InterfaceAlias $using:InterfaceAlias
-    
+
                         Write-Verbose "Current NetworkCategory is now: $($val.NetworkCategory)"
-        
+
                         if ( $val.NetworkCategory -ne $using:NetworkCategory )
                         {
                             Write-Error "Interface '$using:InterfaceAlias' is not '$using:NetworkCategory'."
-                        } 
+                        }
                     }
                     else
                     {
                         Write-Verbose "Set NetworkCategory of interface '$using:InterfaceAlias' to '$using:NetworkCategory '."
-                        Set-NetConnectionProfile -InterfaceAlias $using:InterfaceAlias -NetworkCategory $using:NetworkCategory                             
+                        Set-NetConnectionProfile -InterfaceAlias $using:InterfaceAlias -NetworkCategory $using:NetworkCategory
                     }
                 }
                 GetScript  = { return @{result = 'N/A' } }
-            }  
+            }
         }
-    }
+    } #end function NetIpInterfaceConfig
 
+
+    <#
+        .PARAMETER DisableNetbios
+            Disable NetBios on all network interfaces.
+    #>
     if ($DisableNetbios -eq $true)
     {
         NetBios DisableNetBios_System
@@ -233,6 +458,10 @@ configuration NetworkIpConfiguration {
         }
     }
 
+
+    <#
+        .PARAMETER ConfigureIPv6
+    #>
     if ($ConfigureIPv6 -ge 0)
     {
         # see https://docs.microsoft.com/en-US/troubleshoot/windows-server/networking/configure-ipv6-in-windows
@@ -259,7 +488,7 @@ configuration NetworkIpConfiguration {
                 Write-Verbose 'Values are different'
                 return $false
             }
-            SetScript  = {      
+            SetScript  = {
                 if ( -not (Test-Path -Path $using:configIPv6KeyName) )
                 {
                     New-Item -Path $using:configIPv6KeyName -Force
@@ -268,45 +497,84 @@ configuration NetworkIpConfiguration {
                 $global:DSCMachineStatus = 1
             }
             GetScript  = { return @{result = 'N/A' } }
-        }            
-    }
-
-    if ($null -ne $Interfaces)
-    {
-        foreach ( $netIf in $Interfaces )
-        {
-            # Remove case sensitivity of ordered Dictionary or Hashtables
-            $netIf = @{} + $netIf
-                        
-            if ( [string]::IsNullOrWhitespace($netIf.InterfaceAlias) )
-            {
-                $netIf.InterfaceAlias = 'Ethernet'
-            }
-            if ( $DisableNetbios -eq $true -or [string]::IsNullOrWhitespace($netIf.DisableNetbios) )
-            {
-                $netIf.DisableNetbios = $false
-            }
-            if ( [string]::IsNullOrWhitespace($netIf.EnableLmhostsLookup) )
-            {
-                $netIf.EnableLmhostsLookup = $false
-            }
-            if ( [string]::IsNullOrWhitespace($netIf.EnableDhcp) )
-            {
-                $netIf.EnableDhcp = $false
-            }
-            if ( $DisableIPv6 -eq $true -or [string]::IsNullOrWhitespace($netIf.DisableIPv6) )
-            {
-                $netIf.DisableIPv6 = $false
-            }
-            if ( $netIf.EnableDhcp -eq $true -and [string]::IsNullOrWhitespace($netIf.Prefix) )
-            {
-                $netIf.Prefix = 24
-            }
-
-            NetIpInterfaceConfig @netIf
         }
     }
 
+
+
+    <#
+        .PARAMETER Interfaces
+            List of network interfaces
+    #>
+    if ( $null -ne $Interfaces )
+    {
+        foreach ( $i in $Interfaces )
+        {
+            # Remove case sensitivity of ordered Dictionary or Hashtables
+            $i = @{} + $i
+
+            if ( [System.String]::IsNullOrWhitespace($i.InterfaceAlias) )
+            {
+                $i.InterfaceAlias = 'Ethernet'
+            }
+
+            # if 'AddressFamily' not specified, set default to 'IPv4'
+            if ( [System.String]::IsNullOrWhiteSpace($i.AddressFamily) )
+            {
+                $i.AddressFamily = 'IPv4'
+            }
+
+            if ( ($DisableNetbios -eq $true) -or ([System.String]::IsNullOrWhitespace($i.DisableNetbios)) )
+            {
+                $i.DisableNetbios = $false
+            }
+
+            if ( [System.String]::IsNullOrWhiteSpace($i.EnableLmhostsLookup) )
+            {
+                $i.EnableLmhostsLookup = $false
+            }
+
+            if ( [System.String]::IsNullOrWhitespace($i.EnableDhcp) )
+            {
+                $i.EnableDhcp = $false
+            }
+
+            if ( [System.String]::IsNullOrWhitespace($i.DisableIPv6) )
+            {
+                $i.DisableIPv6 = $false
+            }
+
+            if ( ($i.EnableDhcp -eq $false) -and ([System.String]::IsNullOrWhitespace($i.Prefix)) )
+            {
+                $i.Prefix = 24
+            }
+
+            if ( $i.ContainsKey('InterfaceOptions') )
+            {
+                $interfaceOptions = $i.InterfaceOptions
+                $i.Remove('InterfaceOptions')
+
+                foreach ( $item in ($interfaceOptions.GetEnumerator()) )
+                {
+                    $i.Add($item.Key, $item.Value)
+                }
+            }
+
+            # if property 'InterfaceMetric' is pecified, set 'AutomaticMetric' to disabled
+            if ( -not [System.String]::IsNullOrWhitespace($i.InterfaceMetric) )
+            {
+                $i.AutomaticMetric = 'Disabled'
+            }
+
+            # call function to create the resource
+            NetIpInterfaceConfig @i
+        }
+    }
+
+
+    <#
+        .PARAMETER Routes
+    #>
     if ($null -ne $Routes)
     {
         foreach ( $netRoute in $Routes )
@@ -330,7 +598,7 @@ configuration NetworkIpConfiguration {
             }
 
             $executionName = "route_$($netRoute.InterfaceAlias)_$($netRoute.AddressFamily)_$($netRoute.DestinationPrefix)_$($netRoute.NextHop)" -replace '[().:\s]', ''
-            (Get-DscSplattedResource -ResourceName Route -ExecutionName $executionName -Properties $netRoute -NoInvoke).Invoke($netRoute)    
+            (Get-DscSplattedResource -ResourceName Route -ExecutionName $executionName -Properties $netRoute -NoInvoke).Invoke($netRoute)
         }
     }
 }

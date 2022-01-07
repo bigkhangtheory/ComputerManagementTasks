@@ -10,7 +10,7 @@
 | ------------------ | ---------- | ---------- | ---------------------------------------------------------------- | ------------------ |
 | **InterfaceAlias** | *Required* | `[String]` | Alias of the network interface for which the DHCP Client is set. |                    |
 | **AddressFamily**  | *Required* | `[String]` | IP address family.                                               | IPv4,  IPv6        |
-| **State**          | Required   | `[String]` | The desired state of the DHCP Client.                            | Enabled,  Disabled |
+| **State**          | *Required* | `[String]` | The desired state of the DHCP Client.                            | Enabled,  Disabled |
 
 ## Description
 

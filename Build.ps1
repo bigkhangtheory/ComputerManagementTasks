@@ -4,21 +4,27 @@ param
     [Parameter(Position = 0)]
     $Tasks,
 
+    [Parameter()]
     [switch]
     $ResolveDependency,
 
-    [string]
+    [Parameter()]
+    [System.String]
     $BuildOutput = 'BuildOutput',
 
-    [string]
+    [Parameter()]
+    [System.String]
     $Repository = 'PSGallery',
 
+    [Parameter()]
     [uri]
     $RepositoryProxy
 )
 
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor [System.Net.SecurityProtocolType]::Tls12
+
 $buildModulesPath = Join-Path -Path $BuildOutput -ChildPath Modules
+
 $projectPath = $PSScriptRoot
 $timeStamp = Get-Date -UFormat '%Y%m%d-%H%M%S'
 $psVersion = $PSVersionTable.PSVersion.Major
@@ -30,19 +36,23 @@ $pathElements = $env:Path -split ';'
 $pathElements += 'C:\ProgramData\Microsoft\Windows\PowerShell\PowerShellGet'
 $env:Path = $pathElements -join ';'
 
-if (-not (Get-Module -Name PackageManagement)) {
+if (-not (Get-Module -Name PackageManagement))
+{
     Import-Module -Name PackageManagement #import it before the PSModulePath is changed prevents PowerShell from loading it
 }
 
-if (-not (Test-Path -Path $buildModulesPath)) {
+if (-not (Test-Path -Path $buildModulesPath))
+{
     $null = mkdir -Path $buildModulesPath -Force
 }
 
-if ($buildModulesPath -notin ($Env:PSModulePath -split ';')) {
+if ($buildModulesPath -notin ($Env:PSModulePath -split ';'))
+{
     $env:PSModulePath = "$buildModulesPath;$Env:PSModulePath"
 }
 
-if (-not (Get-Module -Name InvokeBuild -ListAvailable) -and -not $ResolveDependency) {
+if (-not (Get-Module -Name InvokeBuild -ListAvailable) -and -not $ResolveDependency)
+{
     Write-Error "Requirements are missing. Please call the script again with the switch 'ResolveDependency'"
     return
 }
@@ -51,38 +61,33 @@ if (-not (Get-Module -Name InvokeBuild -ListAvailable) -and -not $ResolveDepende
 Get-ChildItem -Path "$PSScriptRoot/Build" -Recurse -Include *.ps1 |
 ForEach-Object {
     Write-Verbose "Importing file $($_.BaseName)"
-    try {
+    try
+    {
         . $_.FullName
-    } catch { }
-}
-
-#register MAP powershell repository and set the repository
-if ($env:NugetFeed) {
-    if ($null -eq (Get-PSRepository -Name $env:NugetFeed)) {
-        $Splatting = @{
-            Name               = $env:NugetFeed
-            SourceLocation     = $env:NugetApiUrl
-            PublishLocation    = $env:NugetApiUrl
-            InstallationPolicy = 'Trusted'
-            Verbose            = $true
-        }
-        Register-PSRepository @Splatting
     }
+    catch { }
 }
 
-if ($ResolveDependency) {
+
+if ($ResolveDependency)
+{
     . $PSScriptRoot/Build/BuildHelpers/Resolve-Dependency.ps1
     Resolve-Dependency
 }
 
-if ($MyInvocation.ScriptName -notlike '*Invoke-Build.ps1') {
-    if ($ResolveDependency -or $PSBoundParameters['ResolveDependency']) {
+if ($MyInvocation.ScriptName -notlike '*Invoke-Build.ps1')
+{
+    if ($ResolveDependency -or $PSBoundParameters['ResolveDependency'])
+    {
         $PSBoundParameters.Remove('ResolveDependency')
     }
 
-    if ($Help) {
+    if ($Help)
+    {
         Invoke-Build ?
-    } else {
+    }
+    else
+    {
         $PSBoundParameters.Remove('Tasks') | Out-Null
         Invoke-Build -Tasks $Tasks -File $MyInvocation.MyCommand.Path @PSBoundParameters
     }
@@ -90,7 +95,8 @@ if ($MyInvocation.ScriptName -notlike '*Invoke-Build.ps1') {
     return
 }
 
-if (-not $Tasks) {
+if (-not $Tasks)
+{
     task . Init,
     CleanBuildOutput,
     SetPsModulePath,
@@ -99,10 +105,13 @@ if (-not $Tasks) {
     Deploy,
     TestReleaseAcceptance
 
-} else {
+}
+else
+{
     task . $Tasks
 }
 
 Write-Host 'Running the folling tasks:' -ForegroundColor Magenta
-${*}.All[-1].Jobs | ForEach-Object { "`t$_" } | -Host
+${*}.All[-1].Jobs | ForEach-Object { "`t$_" } | Write-Host
 Write-Host
+
